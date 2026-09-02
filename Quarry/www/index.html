@@ -135,6 +135,13 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
     font-size:13px;
     color:var(--muted);
   }
+  .nav-btn-pill{
+    display:inline-flex;align-items:center;gap:6px;
+    background:var(--slate);color:var(--bone);border:1px solid var(--line);
+    padding:6px 14px;border-radius:18px;font-size:12.5px;font-weight:600;
+    cursor:pointer;touch-action:manipulation;transition:background .15s, color .15s;
+  }
+  .nav-btn-pill:active{background:var(--slate-hi);color:var(--wheat)}
   .auth-user{
     display:none;
     align-items:center;
@@ -143,18 +150,74 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
     padding:4px 12px 4px 6px;
     border-radius:20px;
     border:1px solid var(--line);
+    cursor:pointer;
   }
+  .auth-user:hover{border-color:var(--wheat)}
   .auth-avatar{
     width:22px;height:22px;border-radius:50%;
     background:var(--wheat);
     display:inline-block;
   }
-  .auth-signout{
-    background:none;border:none;color:var(--wheat);
-    font-size:12px;cursor:pointer;padding:0 2px;margin-left:4px;
-    font-weight:600;
+
+  /* Dedicated Settings & Account Screen */
+  #settingsScreen{
+    --pad-x: max(24px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
+    --pad-t: max(26px, env(safe-area-inset-top, 0px));
+    --pad-b: max(56px, env(safe-area-inset-bottom, 0px));
+    padding: var(--pad-t) var(--pad-x) var(--pad-b);
+    max-width: 680px;
+    margin: 0 auto;
   }
-  .auth-signout:hover{text-decoration:underline}
+  .settings-head{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:24px;border-bottom:1px solid var(--line);padding-bottom:16px;
+  }
+  .settings-head h2{
+    font-family:var(--display);font-size:32px;color:var(--wheat);
+  }
+  .settings-close-btn{
+    background:var(--slate);color:var(--bone);border:1px solid var(--line);
+    padding:8px 18px;border-radius:12px;font-size:13.5px;font-weight:600;
+    cursor:pointer;touch-action:manipulation;
+  }
+  .settings-close-btn:active{transform:scale(.98)}
+  .account-card{
+    background:var(--slate);border:1px solid var(--line);
+    border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px;
+    margin-bottom:24px;
+  }
+  .account-avatar-lg{
+    width:56px;height:56px;border-radius:50%;
+    background:var(--wheat);flex:none;background-size:cover;
+  }
+  .account-info{flex:1;min-width:0}
+  .account-name{font-size:18px;font-weight:700;color:var(--bone);display:block;margin-bottom:2px}
+  .account-email{font-size:13px;color:var(--muted);display:block;word-break:break-all}
+  .settings-section-title{
+    font-size:14px;font-weight:700;color:var(--wheat);text-transform:uppercase;
+    letter-spacing:.04em;margin:24px 0 10px;
+  }
+  .settings-card-group{
+    background:var(--slate);border:1px solid var(--line);
+    border-radius:16px;overflow:hidden;
+  }
+  .settings-row-item{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 20px;border-bottom:1px solid var(--line);
+  }
+  .settings-row-item:last-child{border-bottom:none}
+  .settings-row-item b{font-size:14px;color:var(--bone);display:block;margin-bottom:2px}
+  .settings-row-item span{font-size:12.5px;color:var(--muted);display:block}
+  .settings-action-btn{
+    background:var(--field);color:var(--wheat);border:1px solid var(--line);
+    padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;
+    cursor:pointer;touch-action:manipulation;
+  }
+  .settings-action-btn:active{transform:scale(.98)}
+  .settings-action-danger{
+    background:rgba(207,144,144,0.12);color:#cf9090;border-color:rgba(207,144,144,0.3);
+  }
+  .settings-action-danger:active{background:rgba(207,144,144,0.22)}
 
   /* Full-Screen Mandatory Auth Gate */
   .auth-gate{
@@ -730,17 +793,20 @@ details[open] summary::after{content:"–"}
 <main id="home" class="screen on">
   <div class="home-app">
     <div class="home-primary">
-      <h1 class="wordmark">cat-app <span class="build-tag">v1.9.0</span></h1>
+      <h1 class="wordmark">cat-app <span class="build-tag">v2.8.0</span></h1>
       <p class="standfirst">A hunting game drawn for the way cats actually see.</p>
       <div class="auth-bar" id="authBar">
-        <button class="onboarding-open-btn" id="openOnboardingBtn" type="button" aria-label="Open PWA installation guide">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v14M5 9l7 7 7-7M2 19h20"/></svg>
-          Install PWA
+        <button class="nav-btn-pill" id="openHelpBtn" type="button" aria-label="Open science & installation guide">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Help & Science
         </button>
-        <span class="auth-user" id="authUser">
+        <button class="nav-btn-pill" id="openSettingsBtn" type="button" aria-label="Open App Settings & Account">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </button>
+        <span class="auth-user" id="authUser" title="Open Settings">
           <span class="auth-avatar" id="authAvatar"></span>
           <span id="authName"></span>
-          <button class="auth-signout" id="authSignout">Sign out</button>
         </span>
       </div>
       <p class="deck">Prey that flees instead of charging, in the two colours a cat's eye can tell apart, moving at the stop-start rhythm that triggers a pounce. Set it on a tablet on the floor and let them work.</p>
@@ -927,6 +993,69 @@ details[open] summary::after{content:"–"}
   </div>
 </section>
 
+<!-- ============ SETTINGS & ACCOUNT DEDICATED SCREEN ============ -->
+<section id="settingsScreen" class="screen">
+  <div class="settings-head">
+    <h2>App Settings</h2>
+    <button class="settings-close-btn" id="closeSettingsBtn">Back to Hunt</button>
+  </div>
+
+  <div class="account-card" id="accountCard">
+    <div class="account-avatar-lg" id="settingsAvatarLg"></div>
+    <div class="account-info">
+      <span class="account-name" id="settingsName">Anonymous Cat Lover</span>
+      <span class="account-email" id="settingsEmail">Signed in via Firebase Auth</span>
+    </div>
+  </div>
+
+  <div class="settings-section-title">Guides & Onboarding</div>
+  <div class="settings-card-group">
+    <div class="settings-row-item">
+      <div>
+        <b>Science & Vision Course</b>
+        <span>Replay the 5-module SCORM feline optics and kinetic behavior guide.</span>
+      </div>
+      <button class="settings-action-btn" id="settingsReplayCourseBtn">Start Guide</button>
+    </div>
+    <div class="settings-row-item">
+      <div>
+        <b>PWA & Cat-Proofing Setup</b>
+        <span>View step-by-step installation and iPad Guided Access instructions.</span>
+      </div>
+      <button class="settings-action-btn" id="settingsInstallPwaBtn">Install PWA</button>
+    </div>
+  </div>
+
+  <div class="settings-section-title">Session & Preferences</div>
+  <div class="settings-card-group">
+    <div class="settings-row-item">
+      <div>
+        <b>Reset High Scores & Log</b>
+        <span>Clear local catch records and play logs.</span>
+      </div>
+      <button class="settings-action-btn" id="settingsResetDataBtn">Clear Log</button>
+    </div>
+    <div class="settings-row-item">
+      <div>
+        <b>App Build Version</b>
+        <span>Cloud Run container deployment tag.</span>
+      </div>
+      <span class="build-tag" style="margin:0">v2.8.0</span>
+    </div>
+  </div>
+
+  <div class="settings-section-title">Account Access</div>
+  <div class="settings-card-group">
+    <div class="settings-row-item">
+      <div>
+        <b>Sign Out of cat-app</b>
+        <span>End your current authenticated Firebase session.</span>
+      </div>
+      <button class="settings-action-btn settings-action-danger" id="settingsSignoutBtn">Sign Out</button>
+    </div>
+  </div>
+</section>
+
 <!-- ============ DONE ============ -->
 <section id="done" class="screen">
   <div class="tally" id="tally">0</div>
@@ -939,7 +1068,7 @@ details[open] summary::after{content:"–"}
     <button class="btn-1" id="again">Run it again</button>
     <button class="btn-2" id="home-btn">Change the setup</button>
   </div>
-  <div class="done-foot">cat-app <span class="build-tag">v2.7.0</span></div>
+  <div class="done-foot">cat-app <span class="build-tag">v2.8.0</span></div>
 </section>
 
 <!-- ============ SPLASH SCREEN ============ -->
@@ -966,11 +1095,11 @@ details[open] summary::after{content:"–"}
       <span class="splash-critter-spec">Fish</span>
     </div>
   </div>
-  <h1 class="splash-title">cat-app <span class="build-tag">v2.7.0</span></h1>
+  <h1 class="splash-title">cat-app <span class="build-tag">v2.8.0</span></h1>
   <p class="splash-sub">A feline hunting playground engineered specifically for cat dichromatic vision and natural predatory rhythms.</p>
   <div class="splash-actions">
     <button class="splash-btn-primary" id="splashEnterBtn">Enter Game Arena</button>
-    <button class="splash-btn-secondary" id="splashInstallBtn">How to Install PWA</button>
+    <button class="splash-btn-secondary" id="splashInstallBtn">Learn Science & Install PWA</button>
   </div>
 </div>
 
@@ -3113,14 +3242,39 @@ function updateAuthUI(user){
   if(user){
     authGate.classList.add("hidden");
     authUserEl.style.display = "inline-flex";
-    authNameEl.textContent = user.displayName || user.email.split('@')[0];
+    const name = user.displayName || user.email.split('@')[0];
+    authNameEl.textContent = name;
+    
+    // Update dedicated settings screen account details
+    const setNm = document.getElementById("settingsName");
+    const setEm = document.getElementById("settingsEmail");
+    const setAv = document.getElementById("settingsAvatarLg");
+    if(setNm) setNm.textContent = name;
+    if(setEm) setEm.textContent = user.email || 'Authenticated via Google SSO';
+    
     if(user.photoURL){
       authAvatarEl.style.backgroundImage = 'url('+user.photoURL+')';
       authAvatarEl.style.backgroundSize = 'cover';
+      if(setAv){
+        setAv.style.backgroundImage = 'url('+user.photoURL+')';
+        setAv.style.backgroundSize = 'cover';
+      }
     } else {
       authAvatarEl.style.backgroundImage = 'none';
       authAvatarEl.style.background = 'var(--wheat)';
+      if(setAv){
+        setAv.style.backgroundImage = 'none';
+        setAv.style.background = 'var(--wheat)';
+      }
     }
+
+    // Check if first-time login to show onboarding guide automatically
+    try {
+      if(!localStorage.getItem("cat_app_onboarded_v2")){
+        localStorage.setItem("cat_app_onboarded_v2", "true");
+        openOnboarding();
+      }
+    } catch(e){}
   } else {
     authGate.classList.remove("hidden");
     authUserEl.style.display = "none";
@@ -3275,7 +3429,13 @@ const splashScreen = document.getElementById("splashScreen");
 const splashEnterBtn = document.getElementById("splashEnterBtn");
 const splashInstallBtn = document.getElementById("splashInstallBtn");
 const onboardingModal = document.getElementById("onboardingModal");
-const openOnboardingBtn = document.getElementById("openOnboardingBtn");
+const openHelpBtn = document.getElementById("openHelpBtn");
+const openSettingsBtn = document.getElementById("openSettingsBtn");
+const closeSettingsBtn = document.getElementById("closeSettingsBtn");
+const settingsSignoutBtn = document.getElementById("settingsSignoutBtn");
+const settingsReplayCourseBtn = document.getElementById("settingsReplayCourseBtn");
+const settingsInstallPwaBtn = document.getElementById("settingsInstallPwaBtn");
+const settingsResetDataBtn = document.getElementById("settingsResetDataBtn");
 const onboardBackBtn = document.getElementById("onboardBackBtn");
 const onboardNextBtn = document.getElementById("onboardNextBtn");
 const progressFill = document.getElementById("onboardingProgressFill");
@@ -3294,10 +3454,10 @@ function showOnboardStep(step){
   if(onboardNextBtn) onboardNextBtn.textContent = (currentStep === totalSteps) ? "Start Playing!" : "Continue";
 }
 
-function openOnboarding(){
+function openOnboarding(step){
   if(onboardingModal){
     onboardingModal.classList.add("open");
-    showOnboardStep(1);
+    showOnboardStep(step || 1);
     requestAnimationFrame(paintCritterCast);
   }
 }
@@ -3312,11 +3472,42 @@ if(splashEnterBtn) splashEnterBtn.addEventListener("click", () => {
 
 if(splashInstallBtn) splashInstallBtn.addEventListener("click", () => {
   if(splashScreen) splashScreen.classList.add("hidden");
-  openOnboarding();
-  showOnboardStep(3); // Jump directly to install tabs
+  openOnboarding(4); // Slide 4 is the interactive PWA installation guide
 });
 
-if(openOnboardingBtn) openOnboardingBtn.addEventListener("click", openOnboarding);
+if(openHelpBtn) openHelpBtn.addEventListener("click", () => openOnboarding(1));
+
+if(openSettingsBtn) openSettingsBtn.addEventListener("click", () => {
+  show("settingsScreen");
+});
+if(authUserEl) authUserEl.addEventListener("click", () => {
+  show("settingsScreen");
+});
+if(closeSettingsBtn) closeSettingsBtn.addEventListener("click", () => {
+  show("home");
+  sizePreview();
+});
+
+if(settingsSignoutBtn) settingsSignoutBtn.addEventListener("click", () => {
+  if(fbAuth) fbAuth.signOut();
+  show("home");
+});
+
+if(settingsReplayCourseBtn) settingsReplayCourseBtn.addEventListener("click", () => {
+  openOnboarding(1);
+});
+
+if(settingsInstallPwaBtn) settingsInstallPwaBtn.addEventListener("click", () => {
+  openOnboarding(4);
+});
+
+if(settingsResetDataBtn) settingsResetDataBtn.addEventListener("click", () => {
+  try {
+    localStorage.removeItem("cat_app_records");
+    renderRecord();
+    alert("Catch record cleared.");
+  } catch(e){}
+});
 
 if(onboardBackBtn) onboardBackBtn.addEventListener("click", () => {
   if(currentStep > 1) showOnboardStep(currentStep - 1);

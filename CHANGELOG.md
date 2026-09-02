@@ -52,6 +52,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Visual filter** setting (Underwater / Thermal / Dream), layered over the live field via new SVG filters (`#underwater`, `#thermal`, `#dream`) — separate from the existing Cat vision toggle, which stays a dedicated simulation of feline colour perception.
 - Debris now drifts continuously on its own for every backdrop but Den, rather than only reacting to a paw.
 
+## [2.8.0] - 2026-09-01
+
+### Added
+- Dedicated **App Settings & Account Screen** (`#settingsScreen`):
+  - User account avatar, display name, and email details.
+  - Dedicated sign out action with Firebase session invalidation.
+  - Quick launch buttons for the SCORM Science Guide and PWA Installation Guide.
+  - Local catch records clear action.
+- Automatic first-login onboarding trigger:
+  - Automatically presents the 5-module SCORM course to new users upon login.
+  - Top bar now features dedicated **Help & Science** and **Settings** navigation pills.
+- PWA install guide integrated directly into Slide 4 of the course (replacing standalone/broken button behavior).
+- Bumped Service Worker cache to `cat-app-v20`.
+
 ## [2.7.0] - 2026-09-01
 
 ### Added

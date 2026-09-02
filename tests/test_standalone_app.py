@@ -78,8 +78,9 @@ class TestQuarryStandaloneApp(unittest.TestCase):
             self.assertIn('authGate', content)
             self.assertIn('FIREBASE_CONFIG', content)
             self.assertIn('data-min="0"', content)
-            self.assertIn('splashScreen', content)
-            self.assertIn('onboardingModal', content)
+            self.assertIn('settingsScreen', content)
+            self.assertIn('openHelpBtn', content)
+            self.assertIn('openSettingsBtn', content)
             self.assertIn('tabMobile', content)
             self.assertIn('tabTablet', content)
             self.assertIn('tabWorkstation', content)
@@ -87,7 +88,7 @@ class TestQuarryStandaloneApp(unittest.TestCase):
     def test_service_worker_offline(self):
         with open('Quarry/www/sw.js', 'r', encoding='utf-8') as f:
             sw = f.read()
-        self.assertIn("CACHE_NAME = 'cat-app-v19'", sw)
+        self.assertIn("CACHE_NAME = 'cat-app-v20'", sw)
         self.assertIn('cache.add(url)', sw)
         self.assertNotIn('cache.addAll', sw)
         self.assertIn("request.mode === 'navigate'", sw)
