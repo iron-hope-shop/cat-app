@@ -24,7 +24,11 @@ class TestQuarryStandaloneApp(unittest.TestCase):
             'Quarry/www/icon-512.png',
             'Quarry/www/apple-touch-icon.png',
             'Quarry/www/favicon.ico',
-            'serve.py'
+            'serve.py',
+            'Dockerfile',
+            'nginx.conf',
+            '.github/workflows/deploy.yml',
+            'scripts/setup_gcp_cicd.sh'
         ]
         for path in required_files:
             self.assertTrue(os.path.exists(path), f"Missing file: {path}")
