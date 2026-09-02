@@ -52,6 +52,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Visual filter** setting (Underwater / Thermal / Dream), layered over the live field via new SVG filters (`#underwater`, `#thermal`, `#dream`) — separate from the existing Cat vision toggle, which stays a dedicated simulation of feline colour perception.
 - Debris now drifts continuously on its own for every backdrop but Den, rather than only reacting to a paw.
 
+## [2.4.0] - 2026-09-01
+
+### Added
+- Integrated gamified Duolingo-style character-guided onboarding flow:
+  - **Step 1 (Brix the Beetle)**: Teaches dichromatic feline color contrast in yellow/cyan.
+  - **Step 2 (Pip the Mouse)**: Interactive starter critter selection cards.
+  - **Step 3 (Ziggy the Snake)**: 2-step PWA installation guide for Mobile, Tablet, and Workstation.
+  - **Step 4 (Nori the Fish)**: Final launch coaching on flat floor placement and post-hunt rewards.
+- Animated speech bubbles, mascot avatars, and dynamic progress bar (`#onboardingProgressFill`).
+- Bumped Service Worker cache to `cat-app-v17`.
+
+## [2.3.0] - 2026-09-01
+
+### Fixed
+- Fixed Google OAuth `Error 400: redirect_uri_mismatch` by restoring `authDomain: iron-hope-shop-ff854.firebaseapp.com` which is pre-registered in Google Cloud OAuth client credentials.
+- Updated GitHub Actions workflow environment to run on modern Node 24 runners by default.
+- Bumped Service Worker cache to `cat-app-v16`.
+
 ## [2.2.0] - 2026-09-01
 
 ### Fixed
