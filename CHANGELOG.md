@@ -52,6 +52,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Visual filter** setting (Underwater / Thermal / Dream), layered over the live field via new SVG filters (`#underwater`, `#thermal`, `#dream`) — separate from the existing Cat vision toggle, which stays a dedicated simulation of feline colour perception.
 - Debris now drifts continuously on its own for every backdrop but Den, rather than only reacting to a paw.
 
+## [2.9.2] - 2026-09-02
+
+### Added
+- **Enforced SCORM Onboarding Curriculum**:
+  - Mandatory 5-module interactive SCORM onboarding curriculum presented on first user login covering feline optics, dichromatic vision, kinetic anti-boredom algorithms, behavior profiles, cat-proofing/offline PWA, and predatory loop completion.
+  - Completion state tracked and persisted in `localStorage` under `cat_app_onboarded_scorm_v1`.
+  - Added "Start Course" action button in App Settings to allow replaying all SCORM curriculum modules on demand.
+- **IDM Design System Tokens**:
+  - Semantic CSS variables for surfaces (`--idm-bg-base`, `--idm-bg-surface`, `--idm-bg-subtle`, `--idm-bg-hover`).
+  - Semantic CSS variables for borders (`--idm-border`, `--idm-border-subtle`, `--idm-border-focus`, `--idm-border-accent`).
+  - Semantic CSS variables for typography and text hierarchy (`--idm-text-primary`, `--idm-text-secondary`, `--idm-text-accent`, `--idm-text-inverse`).
+  - Semantic elevation shadows (`--idm-shadow-sm`, `--idm-shadow-md`, `--idm-shadow-lg`, `--idm-shadow-modal`).
+  - Applied IDM design system tokens across settings, modals, SCORM lab cards, and buttons.
+- Unit test coverage for IDM design system tokens, SCORM onboarding completion tracking, and HTML file synchronization.
+
+### Changed
+- Bumped Service Worker cache name to `cat-app-v23`.
+- Synchronized `quarry.html` and `Quarry/www/index.html`.
+
 ## [2.9.1] - 2026-09-02
 
 ### Fixed

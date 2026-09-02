@@ -142,7 +142,7 @@ class TestQuarryStandaloneApp(unittest.TestCase):
     def test_service_worker_offline(self):
         with open('Quarry/www/sw.js', 'r', encoding='utf-8') as f:
             sw = f.read()
-        self.assertIn("CACHE_NAME = 'cat-app-v22'", sw)
+        self.assertIn("CACHE_NAME = 'cat-app-v23'", sw)
         self.assertIn('cache.add(url)', sw)
         self.assertNotIn('cache.addAll', sw)
         self.assertIn("request.mode === 'navigate'", sw)
@@ -206,6 +206,54 @@ class TestQuarryStandaloneApp(unittest.TestCase):
         self.assertIn('Assets.xcassets', content)
         self.assertIn('www', content)
         self.assertIn('PRODUCT_BUNDLE_IDENTIFIER = com.quarry.catgame', content)
+
+    def test_idm_design_system_tokens(self):
+        """Verify semantic IDM tokens for surfaces, borders, text, and shadows."""
+        idm_tokens = [
+            '--idm-bg-base',
+            '--idm-bg-surface',
+            '--idm-bg-subtle',
+            '--idm-bg-hover',
+            '--idm-border',
+            '--idm-border-subtle',
+            '--idm-border-focus',
+            '--idm-border-accent',
+            '--idm-text-primary',
+            '--idm-text-secondary',
+            '--idm-text-accent',
+            '--idm-text-inverse',
+            '--idm-shadow-sm',
+            '--idm-shadow-md',
+            '--idm-shadow-lg',
+            '--idm-shadow-modal'
+        ]
+        for path in ['quarry.html', 'Quarry/www/index.html']:
+            with open(path, 'r', encoding='utf-8') as f:
+                src = f.read()
+            for token in idm_tokens:
+                self.assertIn(token, src, f"Missing IDM token {token} in {path}")
+
+    def test_scorm_onboarding_enforcement(self):
+        """Verify mandatory 5-module SCORM curriculum, localStorage key, and settings replay."""
+        for path in ['quarry.html', 'Quarry/www/index.html']:
+            with open(path, 'r', encoding='utf-8') as f:
+                src = f.read()
+            # 5 modules
+            for i in range(1, 6):
+                self.assertIn(f'id="onboardStep{i}"', src, f"Missing onboardStep{i} in {path}")
+            # SCORM tracking key
+            self.assertIn('cat_app_onboarded_scorm_v1', src, f"Missing SCORM v1 key in {path}")
+            # Start Course button in App Settings
+            self.assertIn('settingsReplayCourseBtn', src, f"Missing replay button in {path}")
+            self.assertIn('>Start Course</button>', src, f"Missing 'Start Course' label in {path}")
+
+    def test_html_files_identical(self):
+        """quarry.html and Quarry/www/index.html must be identical."""
+        with open('quarry.html', 'r', encoding='utf-8') as f:
+            quarry_src = f.read()
+        with open('Quarry/www/index.html', 'r', encoding='utf-8') as f:
+            www_src = f.read()
+        self.assertEqual(quarry_src, www_src, "quarry.html and Quarry/www/index.html differ")
 
 if __name__ == '__main__':
     unittest.main()
