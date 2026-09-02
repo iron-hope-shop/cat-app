@@ -1,0 +1,17 @@
+# Logs & Certs
+error.log
+certs/
+
+# OS / Editor
+.DS_Store
+*.swp
+*~
+.idea/
+.vscode/
+
+# Xcode / Apple
+xcuserdata/
+*.xcworkspace
+*.xcuserdatad
+DerivedData/
+build/

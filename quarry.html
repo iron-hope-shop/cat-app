@@ -1,0 +1,2510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="cat-app">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#10161c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" href="favicon.ico">
+<title>cat-app — a hunting game built for feline eyes</title>
+<style>
+:root{
+  --field:#10161c;
+  --slate:#1a2430;
+  --slate-hi:#22303e;
+  --wheat:#f0de6b;
+  --sky:#62b4e0;
+  --bone:#ccd6de;
+  --muted:#7d8b98;
+  --line:#2a3846;
+  --display:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --body:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+html{
+  min-height:100%;
+  -webkit-text-size-adjust:none;
+}
+body{
+  min-height:100%;
+  background:var(--field);
+  color:var(--bone);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  user-select:none;
+  touch-action:pan-y;
+  -webkit-overflow-scrolling:touch;
+}
+body.in-play{
+  overflow:hidden;
+  touch-action:none;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+:focus-visible{outline:2px solid var(--sky);outline-offset:3px;border-radius:2px}
+
+/* ---------- screens ---------- */
+.screen{display:none;min-height:100%}
+.screen.on{display:block}
+#play.on,#done.on{display:flex}
+
+/* ---------- home ---------- */
+#home{
+  --pad-x: max(24px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
+  --pad-t: max(26px, env(safe-area-inset-top, 0px));
+  --pad-b: max(56px, env(safe-area-inset-bottom, 0px));
+  padding: var(--pad-t) var(--pad-x) var(--pad-b);
+  max-width: 1180px;
+  margin: 0 auto;
+}
+.home-app{display:flex;flex-direction:column}
+.home-primary,.home-controls{min-width:0}
+.home-controls{margin-top:34px}
+.wordmark{
+  font-family:var(--display);
+  font-size:clamp(44px,11vw,76px);
+  font-weight:600;
+  line-height:.92;
+  letter-spacing:-.02em;
+  color:var(--wheat);
+}
+.standfirst{
+  font-family:var(--display);
+  font-size:clamp(18px,3.8vw,23px);
+  font-weight:400;
+  line-height:1.35;
+  color:var(--bone);
+  max-width:32ch;
+  margin-top:14px;
+}
+.deck{color:var(--muted);font-size:15px;max-width:54ch;margin-top:16px}
+
+/* hero: live specimen window */
+.window{
+  margin-top:24px;
+  border-radius:14px;
+  overflow:hidden;
+  background:#0b1015;
+  box-shadow:inset 0 0 0 1px var(--line), 0 18px 40px -28px #000;
+  position:relative;
+}
+#preview{display:block;width:100%;height:200px}
+.window-note{
+  position:absolute;left:14px;bottom:11px;
+  font-size:12.5px;color:var(--muted);
+  pointer-events:none;
+}
+.peek{
+  position:absolute;right:11px;bottom:9px;
+  font-size:12.5px;padding:6px 13px;border-radius:20px;
+  background:rgba(10,14,18,.7);color:var(--muted);
+  box-shadow:inset 0 0 0 1px var(--line);backdrop-filter:blur(4px);
+  touch-action: manipulation;
+}
+  .peek[aria-pressed="true"]{background:var(--wheat);color:#141a10;box-shadow:none}
+  .build-tag{
+    display:inline-block;
+    font-family:var(--body);
+    font-size:11.5px;
+    font-weight:700;
+    letter-spacing:0.04em;
+    padding:2px 8px;
+    border-radius:12px;
+    background:rgba(240,222,107,0.14);
+    color:var(--wheat);
+    border:1px solid rgba(240,222,107,0.32);
+    vertical-align:middle;
+    margin-left:10px;
+    text-transform:uppercase;
+    line-height:1.4;
+  }
+  .done-foot{
+    margin-top:20px;
+    font-size:13px;
+    color:var(--muted);
+    text-align:center;
+  }
+  body.cv #preview, body.cv .chip canvas{filter:url(#catvision)}
+body.filt-underwater #preview, body.filt-underwater .chip canvas, body.filt-underwater #field{
+  filter: hue-rotate(165deg) saturate(1.5) contrast(1.12) brightness(0.95);
+  -webkit-filter: hue-rotate(165deg) saturate(1.5) contrast(1.12) brightness(0.95);
+}
+body.filt-thermal #preview, body.filt-thermal .chip canvas, body.filt-thermal #field{
+  filter: invert(0.85) hue-rotate(190deg) saturate(3.2) contrast(1.5) brightness(1.1);
+  -webkit-filter: invert(0.85) hue-rotate(190deg) saturate(3.2) contrast(1.5) brightness(1.1);
+}
+body.filt-dream #preview, body.filt-dream .chip canvas, body.filt-dream #field{
+  filter: brightness(1.18) contrast(1.15) saturate(1.65) drop-shadow(0 0 12px rgba(98,180,224,0.4));
+  -webkit-filter: brightness(1.18) contrast(1.15) saturate(1.65) drop-shadow(0 0 12px rgba(98,180,224,0.4));
+}
+
+/* sections */
+.block{margin-top:32px}
+.block-first{margin-top:0}
+.block-h{
+  font-family:var(--display);
+  font-size:20px;font-weight:600;
+  color:var(--bone);margin-bottom:4px;
+}
+.block-sub{color:var(--muted);font-size:14px;margin-bottom:16px;max-width:52ch}
+
+/* specimen chips */
+.specimens{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.chip{
+  background:var(--slate);
+  border-radius:12px;
+  padding:12px 6px 11px;
+  text-align:center;
+  transition:background .14s, box-shadow .14s, transform .1s;
+  box-shadow:inset 0 0 0 1px transparent;
+  touch-action: manipulation;
+  min-height: 74px;
+}
+.chip:active{transform:scale(.97)}
+.chip canvas{display:block;width:100%;height:44px}
+.chip span{display:block;font-size:13px;color:var(--muted);margin-top:5px;font-weight:500}
+.chip[aria-checked="true"]{background:var(--slate-hi);box-shadow:inset 0 0 0 1.5px var(--wheat)}
+.chip[aria-checked="true"] span{color:var(--bone)}
+.specimen-note{color:var(--muted);font-size:14px;margin-top:13px;min-height:2.6em;max-width:52ch}
+
+/* settings rows */
+.row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 0;border-top:1px solid var(--line)}
+.row:last-of-type{border-bottom:1px solid var(--line)}
+.row-label{font-size:15px}
+.row-label small{display:block;color:var(--muted);font-size:13px;line-height:1.4;margin-top:2px}
+.seg{display:flex;background:var(--slate);border-radius:10px;padding:4px;flex:none}
+.seg button{padding:8px 16px;border-radius:8px;font-size:14.5px;color:var(--muted);white-space:nowrap;touch-action:manipulation}
+.seg button[aria-pressed="true"]{background:var(--slate-hi);color:var(--wheat);font-weight:600}
+
+/* cta */
+.cta{
+  display:block;width:100%;margin-top:24px;
+  background:var(--wheat);color:#141a10;
+  font-size:19px;font-weight:600;
+  padding:20px;border-radius:14px;
+  box-shadow: 0 4px 20px rgba(240,222,107,.18);
+  transition:transform .1s, filter .1s;
+  touch-action: manipulation;
+}
+.cta:active{transform:scale(.985);filter:brightness(.95)}
+
+/* prep list */
+.prep{margin-top:28px;padding-left:18px;border-left:2px solid var(--line)}
+.prep h3{font-family:var(--display);font-size:18px;font-weight:600;margin-bottom:12px}
+.prep p{color:var(--muted);font-size:14.5px;margin-bottom:11px;max-width:54ch}
+.prep b{color:var(--bone);font-weight:500}
+
+/* science disclosure */
+details{margin-top:28px;border-top:1px solid var(--line);padding-top:18px}
+
+/* ---------- iPad & Tablet: full kiosk setup fits cleanly on 1 screen ---------- */
+@media (min-width: 760px) and (min-height: 560px){
+  #home{
+    --pad-x: max(26px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
+    --pad-t: max(20px, env(safe-area-inset-top, 0px));
+    --pad-b: max(20px, env(safe-area-inset-bottom, 0px));
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  .home-app{
+    display:grid;
+    grid-template-columns:minmax(280px,1fr) minmax(360px,1.35fr);
+    grid-template-rows:minmax(0,1fr) auto;
+    grid-template-areas:
+      "primary controls"
+      "cta     controls";
+    gap:16px 28px;
+    height:calc(100dvh - var(--pad-t) - var(--pad-b));
+    max-height:calc(100dvh - var(--pad-t) - var(--pad-b));
+    box-sizing: border-box;
+  }
+  .home-primary{grid-area:primary;display:flex;flex-direction:column;min-height:0}
+  .home-controls{
+    grid-area:controls;align-self:stretch;margin-top:0;
+    display:flex;flex-direction:column;min-height:0;
+    overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  }
+
+  .wordmark{font-size:clamp(36px,4.5vw,52px);line-height:1}
+  .standfirst{font-size:16px;max-width:32ch;margin-top:6px;line-height:1.3}
+  .deck{font-size:13px;max-width:44ch;margin-top:6px;line-height:1.35}
+
+  /* the specimen window takes whatever height is left over */
+  .window{flex:1;min-height:140px;margin-top:12px}
+  #preview{height:100%}
+  .window-note,.peek{font-size:12px}
+
+  .block{margin-top:10px}
+  .block-first{margin-top:0}
+  .block-h{font-size:16px;margin-bottom:2px}
+  .block-sub{font-size:12px;margin-bottom:6px}
+  .specimens{grid-template-columns:repeat(4,1fr);gap:6px}
+  .chip{min-height:54px;padding:6px 4px 5px;border-radius:10px}
+  .chip canvas{height:32px}
+  .chip span{font-size:11.5px;margin-top:2px}
+  .specimen-note{font-size:12px;margin-top:4px;min-height:2.4em;line-height:1.3}
+
+  .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}
+  .row{padding:6px 0;flex-direction:row;align-items:center;justify-content:space-between;border-top:1px solid var(--line)}
+  .row-label{font-size:13px}
+  .row-label small{display:none}
+  .seg{padding:2px;border-radius:8px}
+  .seg button{padding:5px 9px;font-size:12px;border-radius:6px}
+
+  .cta{grid-area:cta;margin-top:0;font-size:17px;padding:15px;border-radius:12px}
+
+  .home-extra{display:none}
+}
+
+@media (min-width: 760px) and (min-height: 560px) and (orientation: portrait){
+  .window{min-height:140px}
+}
+
+/* A column this narrow can't hold a label and its switch on one line. */
+@media (min-width: 760px) and (max-width: 980px) and (min-height: 560px){
+  .row{flex-direction:column;align-items:stretch;gap:12px}
+  .seg{align-self:stretch}
+  .seg button{flex:1;text-align:center}
+}
+
+/* Rows with a wider seg (more than 2-3 short options) opt into wrapping so
+   they never overflow a phone-width screen. */
+.row-wrap .seg{flex-wrap:wrap}
+.row-wrap .seg button{flex:1 1 auto;text-align:center}
+@media (max-width: 759px){
+  .row-wrap{flex-direction:column;align-items:stretch;gap:12px}
+  .row-wrap .seg{align-self:stretch}
+}
+summary{
+  font-family:var(--display);font-size:18px;font-weight:600;
+  cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;
+}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--muted);font-family:var(--body);font-size:20px}
+details[open] summary::after{content:"–"}
+.sci{margin-top:16px}
+.sci dt{font-size:15px;font-weight:600;color:var(--wheat);margin-top:16px}
+.sci dt:first-child{margin-top:0}
+.sci dd{color:var(--muted);font-size:14.5px;margin-top:4px;max-width:56ch}
+.colorbar{display:flex;gap:6px;margin-top:9px}
+.colorbar i{height:22px;flex:1;border-radius:4px}
+.rec{margin-top:16px}
+.rec table{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+.rec th{text-align:right;color:var(--muted);font-weight:500;font-size:12.5px;padding:0 0 8px;white-space:nowrap}
+.rec th:first-child,.rec td:first-child{text-align:left}
+.rec td{text-align:right;padding:8px 0;border-top:1px solid var(--line);color:var(--muted)}
+.rec td:first-child{color:var(--bone)}
+.rec td b{color:var(--wheat);font-weight:600}
+.rec h4{font-family:var(--display);font-size:16px;font-weight:600;margin:24px 0 8px}
+.rec p{color:var(--muted);font-size:13px;line-height:1.55;margin-top:12px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px;margin-bottom:18px}
+.kpi{background:var(--slate);border-radius:10px;padding:12px 12px 11px}
+.kpi b{display:block;font-family:var(--display);font-size:21px;color:var(--wheat);font-weight:600;line-height:1.1}
+.kpi span{color:var(--muted);font-size:11.5px}
+.rec-fav{color:var(--muted);font-size:13.5px;margin:-6px 0 18px}
+.exp{display:flex;gap:9px;margin-top:18px;flex-wrap:wrap}
+.exp button{background:var(--slate);padding:11px 17px;border-radius:9px;font-size:14px;font-weight:500}
+.exp button:active{background:var(--slate-hi)}
+.exp button.danger{color:#cf9090}
+.foot{margin-top:40px;color:var(--muted);font-size:13px;line-height:1.6;max-width:54ch}
+
+/* ---------- play ---------- */
+#play{position:fixed;inset:0;background:#080c10;flex-direction:column}
+#field{display:block;position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+.hud{
+  position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:18px;
+  text-align:right;font-size:13px;color:#3d4c5a;pointer-events:none;
+  transition:opacity .6s;font-variant-numeric:tabular-nums;
+}
+.hud.dim{opacity:.25}
+.hud b{color:#5c6f80;font-weight:500}
+#quit{
+  position:absolute;top:calc(env(safe-area-inset-top,0px) + 8px);left:8px;
+  width:76px;height:60px;border-radius:12px;
+  font-size:12px;color:#3d4c5a;
+  display:flex;align-items:center;justify-content:center;
+  touch-action:none;
+}
+#quit.holding{background:#161f28;color:var(--bone)}
+#swap{
+  position:absolute;right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);
+  width:80px;height:60px;border-radius:12px;
+  font-size:12px;line-height:1.3;color:#3d4c5a;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  touch-action:none;
+}
+#swap.holding{background:#161f28;color:var(--bone)}
+.swapbar{
+  position:absolute;left:0;right:0;bottom:0;
+  display:flex;gap:8px;overflow-x:auto;
+  padding:34px 12px calc(env(safe-area-inset-bottom,0px) + 12px);
+  background:linear-gradient(to top,rgba(6,9,12,.97) 60%,rgba(6,9,12,0));
+  transform:translateY(115%);transition:transform .2s ease;
+  pointer-events:none;
+}
+.swapbar.open{transform:none;pointer-events:auto}
+.swapchip{
+  flex:0 0 auto;width:74px;background:#161f28;border-radius:10px;
+  padding:7px 4px 6px;text-align:center;box-shadow:inset 0 0 0 1.5px transparent;
+}
+.swapchip canvas{display:block;width:100%;height:32px}
+.swapchip span{display:block;font-size:11.5px;color:#7d8b98;margin-top:4px}
+.swapchip[aria-pressed="true"]{box-shadow:inset 0 0 0 1.5px var(--wheat)}
+.swapchip[aria-pressed="true"] span{color:var(--bone)}
+#opts{
+  position:absolute;left:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);
+  width:80px;height:60px;border-radius:12px;
+  font-size:12px;line-height:1.3;color:#3d4c5a;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  touch-action:none;
+}
+#opts.holding{background:#161f28;color:var(--bone)}
+.optsbar{
+  position:absolute;left:0;right:0;bottom:0;
+  display:flex;flex-direction:column;gap:12px;
+  padding:18px 14px calc(env(safe-area-inset-bottom,0px) + 16px);
+  background:linear-gradient(to top,rgba(6,9,12,.97) 70%,rgba(6,9,12,0));
+  transform:translateY(115%);transition:transform .2s ease;
+  pointer-events:none;
+  max-height:70vh;overflow-y:auto;
+}
+.optsbar.open{transform:none;pointer-events:auto}
+.opts-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.opts-row>span{font-size:12px;color:#7d8b98;white-space:nowrap}
+.opts-seg{display:flex;background:#161f28;border-radius:9px;padding:3px;gap:2px;flex-wrap:wrap}
+.opts-seg button{padding:6px 11px;border-radius:7px;font-size:12px;color:#7d8b98;white-space:nowrap}
+.opts-seg button[aria-pressed="true"]{background:#22303e;color:var(--wheat);font-weight:600}
+
+/* ---------- done ---------- */
+#done{
+  position:fixed;inset:0;background:var(--field);
+  flex-direction:column;justify-content:center;
+  padding:40px clamp(24px,7vw,56px);max-width:600px;margin:0 auto;
+}
+.tally{font-family:var(--display);font-size:clamp(52px,17vw,92px);font-weight:600;color:var(--wheat);line-height:1}
+.tally-label{font-size:16px;color:var(--muted);margin-top:6px}
+#done h2{font-family:var(--display);font-size:clamp(24px,6.5vw,32px);font-weight:600;margin-top:38px;line-height:1.2}
+#done p{color:var(--muted);font-size:15.5px;margin-top:14px;max-width:50ch}
+.log{margin-top:30px;border-top:1px solid var(--line);padding-top:16px}
+.log:empty{display:none}
+.log h4{font-family:var(--display);font-size:16px;font-weight:600;margin-bottom:8px}
+.log-row{display:flex;align-items:baseline;gap:9px;padding:4px 0;font-size:14.5px}
+.log-row span{flex:1;color:var(--bone)}
+.log-row b{color:var(--wheat);font-weight:600;font-variant-numeric:tabular-nums}
+.log-row small{color:var(--muted);font-size:13px;min-width:66px;text-align:right}
+.log-note{color:var(--muted);font-size:13px;margin-top:9px;line-height:1.5}
+.donekpis{margin-top:18px}
+.donekpi-row{display:flex;gap:10px;flex-wrap:wrap}
+.donekpi-row .kpi{flex:1 1 90px}
+.pb{margin-top:12px;color:var(--wheat);font-size:13.5px;font-weight:600}
+.done-actions{display:flex;gap:11px;margin-top:34px;flex-wrap:wrap}
+.btn-2{background:var(--slate);padding:15px 22px;border-radius:11px;font-size:15px;font-weight:500}
+.btn-1{background:var(--wheat);color:#141a10;padding:15px 24px;border-radius:11px;font-size:15px;font-weight:600}
+
+@media (prefers-reduced-motion: reduce){
+  .cta:active{transform:none}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <!-- Deuteranope simulation composed with 0.62 saturation, evaluated in linear
+       light. Same model as the companion vision page. -->
+  <filter id="catvision" color-interpolation-filters="linearRGB">
+    <feColorMatrix type="matrix" values="
+      0.28411 0.68847 0.02749 0 0
+      0.28411 0.68846 0.02744 0 0
+      0.08875 0.26381 0.64743 0 0
+      0       0       0       1 0"/>
+  </filter>
+</defs></svg>
+
+<!-- ============ HOME ============ -->
+<main id="home" class="screen on">
+  <div class="home-app">
+    <div class="home-primary">
+      <h1 class="wordmark">cat-app <span class="build-tag">v1.6.0</span></h1>
+      <p class="standfirst">A hunting game drawn for the way cats actually see.</p>
+      <p class="deck">Prey that flees instead of charging, in the two colours a cat's eye can tell apart, moving at the stop-start rhythm that triggers a pounce. Set it on a tablet on the floor and let them work.</p>
+
+      <div class="window">
+        <canvas id="preview"></canvas>
+        <span class="window-note" id="previewNote">Beetle, moving as it will in play</span>
+        <button class="peek" id="peek" aria-pressed="false">Cat vision</button>
+      </div>
+    </div>
+
+    <div class="home-controls">
+      <section class="block block-first">
+        <h2 class="block-h">What they'll be chasing</h2>
+        <p class="block-sub">Each one moves on a different rhythm. Cats who ignore one will often chase another.</p>
+        <div class="specimens" id="specimens" role="radiogroup" aria-label="Choose quarry"></div>
+        <p class="specimen-note" id="specimenNote"></p>
+      </section>
+
+      <section class="block">
+        <div class="settings-grid">
+          <div class="row">
+            <span class="row-label">Session length
+              <small>Hunting happens in short bursts. Two short sessions beat one long one.</small>
+            </span>
+            <div class="seg" id="lenSeg">
+              <button data-min="5" aria-pressed="false">5 min</button>
+              <button data-min="10" aria-pressed="true">10 min</button>
+              <button data-min="15" aria-pressed="false">15 min</button>
+            </div>
+          </div>
+          <div class="row">
+            <span class="row-label">Shuffle quarry
+              <small>Swaps to a different creature every minute or two, on its own.</small>
+            </span>
+            <div class="seg" id="shufSeg">
+              <button data-s="0" aria-pressed="true">Off</button>
+              <button data-s="1" aria-pressed="false">On</button>
+            </div>
+          </div>
+          <div class="row">
+            <span class="row-label">Squeaks & audio cues
+              <small>Catch chirps, scamper clicks, and curiosity lures.</small>
+            </span>
+            <div class="seg" id="sndSeg">
+              <button data-snd="1" aria-pressed="true">On</button>
+              <button data-snd="0" aria-pressed="false">Off</button>
+            </div>
+          </div>
+          <div class="row">
+            <span class="row-label">Frenzy swarm & lure
+              <small>Spawns darting wand teasers and mini critters when idle.</small>
+            </span>
+            <div class="seg" id="frenzySeg">
+              <button data-fz="1" aria-pressed="true">On</button>
+              <button data-fz="0" aria-pressed="false">Off</button>
+            </div>
+          </div>
+          <div class="row row-wrap">
+            <span class="row-label">Backdrop
+              <small>Changes the floor, drifting debris and hiding spots.</small>
+            </span>
+            <div class="seg" id="bgSeg">
+              <button data-bg="den" aria-pressed="true">Den</button>
+              <button data-bg="underwater" aria-pressed="false">Water</button>
+              <button data-bg="meadow" aria-pressed="false">Meadow</button>
+              <button data-bg="nightfall" aria-pressed="false">Night</button>
+            </div>
+          </div>
+          <div class="row row-wrap">
+            <span class="row-label">Visual filter
+              <small>GPU-accelerated atmospheric look layered during play.</small>
+            </span>
+            <div class="seg" id="filtSeg">
+              <button data-f="none" aria-pressed="true">None</button>
+              <button data-f="underwater" aria-pressed="false">Water</button>
+              <button data-f="thermal" aria-pressed="false">Thermal</button>
+              <button data-f="dream" aria-pressed="false">Dream</button>
+            </div>
+          </div>
+          <div class="row">
+            <span class="row-label">Auto rotate
+              <small>Cycles backdrop and filter on its own during play.</small>
+            </span>
+            <div class="seg" id="arotSeg">
+              <button data-ar="1" aria-pressed="true">On</button>
+              <button data-ar="0" aria-pressed="false">Off</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <button class="cta" id="start">Start the hunt</button>
+  </div>
+
+  <div class="home-extra">
+    <section class="prep">
+      <h3>Before you start</h3>
+      <p><b>Have a treat or a real toy ready.</b> This is the part most screen games and laser pointers get wrong. A cat's hunting sequence ends in a physical catch, and a hunt that never ends leaves them wound up. When the timer runs out, give them something they can actually pin down.</p>
+      <p><b>Put a screen protector on.</b> Claws come out. A tempered glass sheet costs a few pounds and saves the tablet.</p>
+      <p><b>Lay the tablet flat and hold it still,</b> or wedge it against something. A sliding screen breaks the illusion instantly.</p>
+      <p><b>Some cats won't register.</b> Dry paw pads and fur don't always trigger a capacitive screen, and plenty of cats simply aren't interested in screens — I've seen no reliable figure for how many, so don't trust anyone who gives you one. Two minutes of watching tells you which kind you have.</p>
+    </section>
+
+    <div class="extra-side">
+      <details id="recWrap" hidden>
+        <summary>Your cat's record</summary>
+        <div class="rec" id="rec"></div>
+      </details>
+
+      <details>
+        <summary>Why it looks like this</summary>
+    <dl class="sci">
+      <dt>Yellow and blue, never red</dt>
+      <dd>Most studies find two cone types, peaking around 460 and 560 nanometres, so their colour world runs blue to yellow-green. Long wavelengths land as dim and washed out — a red dot reads to them as a grey smudge they track only by its motion. Every creature here is painted in the range a cat can genuinely separate from the background.</dd>
+      <div class="colorbar"><i style="background:#62b4e0"></i><i style="background:#8fc9dd"></i><i style="background:#cfd8c9"></i><i style="background:#f0de6b"></i></div>
+      <dd style="margin-top:9px">Tap <b style="color:var(--bone);font-weight:500">Cat vision</b> on the preview to run it through a deuteranope simulation and check for yourself that the quarry still stands out.</dd>
+
+      <dt>Big shapes, no fine detail</dt>
+      <dd>Feline visual acuity sits somewhere near 20/100 to 20/200 against human 20/20. Detail is wasted. The creatures are drawn large, in flat high-contrast blocks with a soft halo, because edge contrast and brightness are what a cat's eye resolves at a metre away.</dd>
+
+      <dt>Dark ground</dt>
+      <dd>A cat's retina is rod-heavy and built for low light, with a reflective tapetum behind it. A near-black field lets the quarry read as a bright moving object rather than a shape lost in glare, and it's easier on their eyes than a white background.</dd>
+
+      <dt>It stops. Then it bolts.</dt>
+      <dd>Constant smooth motion habituates fast. What drives the stalk-and-pounce sequence is the freeze: prey goes still, the cat closes distance, then it breaks.</dd>
+
+      <dt>There is no pattern to learn</dt>
+      <dd>The commonest reason a cat gives up on something like this is that they've worked out the rhythm. So each move is drawn from a repertoire rather than repeated: ordinary darts, panic sprints, sudden doubling back, zigzag runs, flinching false starts and the occasional long dead stop. On top of that every session rolls the quarry a fresh temperament, shifting its speed, its patience and how sharply it turns, so the same creature never plays the same way twice. If she's lost interest, switch on Shuffle and let it rotate creatures mid-session.</dd>
+
+      <dt>The floor answers back</dt>
+      <dd>Leaves lie scattered across the ground and tumble away from a paw, tufts shake when they're struck, and a miss still kicks up grit. A cat that swipes and gets nothing at all learns the screen is inert; making the terrain respond keeps a near miss worth something. All of it is drawn dim on purpose — brightness contrast is what a cat's eye resolves, so busy scenery would cost the quarry its salience.</dd>
+
+      <dt>It goes to ground</dt>
+      <dd>Open-floor looping is a video game; real prey breaks for cover and waits. Each session scatters a few tufts across the screen, and the quarry will bolt into one and sit tight with just enough movement showing to hold a stare. Pouncing the tuft counts as a catch — the whole patch is the target while it's hiding — and a paw landing nearby flushes it out at speed.</dd>
+
+      <dt>It always runs away</dt>
+      <dd>Nothing edible moves toward a predator. Put a paw down near the quarry and it breaks away from the contact point, which is why the fleeing burst is the fastest movement in the game.</dd>
+
+      <dt>It gets bored before your cat does</dt>
+      <dd>If nothing touches the screen for twenty-five seconds the quarry slows right down, holds its freezes longer and twitches in place instead of running. That's the same thing you'd do with a wand toy when a cat's attention drifts: less movement, not more. The last forty-five seconds of a session it tires steadily, so play is likely to finish on a catch rather than break off mid-chase.</dd>
+
+      <dt>It can be caught</dt>
+      <dd>The one rule that matters. Each near miss slows the quarry slightly and widens its catch radius, so pursuit reliably converts. The reasoning: a cat's predatory sequence ends in a physical catch, and a 2021 owner survey found frequency of laser-pointer play associated with almost every repetitive behaviour it measured. That study is correlational and self-reported, so treat it as a good reason for caution rather than a proven mechanism.</dd>
+    </dl>
+      </details>
+    </div>
+
+    <p class="foot">Everything runs in this page — nothing is recorded or sent anywhere. Screen play is a supplement to real toys, not a replacement for them.</p>
+  </div>
+</main>
+
+<!-- ============ PLAY ============ -->
+<section id="play" class="screen">
+  <canvas id="field"></canvas>
+  <div class="hud" id="hud"><b id="hudCatch">0</b> caught<br><span id="hudTime">10:00</span></div>
+  <button id="quit" aria-label="Hold to end session">hold to end</button>
+  <button id="opts" aria-label="Hold to change look and sound">hold to<br>tune</button>
+  <button id="swap" aria-label="Hold to change quarry">hold to<br>swap</button>
+  <div class="swapbar" id="swapbar" role="radiogroup" aria-label="Change quarry"></div>
+  <div class="optsbar" id="optsbar">
+    <div class="opts-row"><span>Backdrop</span><div class="opts-seg" id="optsBg">
+      <button data-bg="den">Den</button><button data-bg="underwater">Water</button>
+      <button data-bg="meadow">Meadow</button><button data-bg="nightfall">Night</button>
+    </div></div>
+    <div class="opts-row"><span>Filter</span><div class="opts-seg" id="optsFilt">
+      <button data-f="none">None</button><button data-f="underwater">Water</button>
+      <button data-f="thermal">Thermal</button><button data-f="dream">Dream</button>
+    </div></div>
+    <div class="opts-row"><span>Auto rotate</span><div class="opts-seg" id="optsArot">
+      <button data-ar="1">On</button><button data-ar="0">Off</button>
+    </div></div>
+    <div class="opts-row"><span>Shuffle quarry</span><div class="opts-seg" id="optsShuf">
+      <button data-s="1">On</button><button data-s="0">Off</button>
+    </div></div>
+    <div class="opts-row"><span>Audio</span><div class="opts-seg" id="optsSnd">
+      <button data-snd="1">On</button><button data-snd="0">Off</button>
+    </div></div>
+    <div class="opts-row"><span>Frenzy</span><div class="opts-seg" id="optsFrenzy">
+      <button data-fz="1">On</button><button data-fz="0">Off</button>
+    </div></div>
+  </div>
+</section>
+
+<!-- ============ DONE ============ -->
+<section id="done" class="screen">
+  <div class="tally" id="tally">0</div>
+  <div class="tally-label" id="tallyLabel">catches</div>
+  <div class="donekpis" id="doneKpis"></div>
+  <h2>Now give them a real one.</h2>
+  <p id="doneCopy">Finish the sequence with something they can hold on to — a treat, a wand toy, a kickeroo. The catch is what closes the hunt and settles them down afterwards.</p>
+  <div class="log" id="log"></div>
+  <div class="done-actions">
+    <button class="btn-1" id="again">Run it again</button>
+    <button class="btn-2" id="home-btn">Change the setup</button>
+  </div>
+  <div class="done-foot">cat-app <span class="build-tag">v1.6.0</span></div>
+</section>
+
+<script>
+(function(){
+"use strict";
+function reportError(kind, err){
+  try{
+    var msg = (err && err.stack) ? err.stack : String(err);
+    fetch("/log", {method:"POST", headers:{"Content-Type":"text/plain"}, body:"["+kind+"] "+msg, keepalive:true}).catch(function(){});
+  }catch(e){}
+}
+window.addEventListener("error", function(e){ reportError("JS", e.error || e.message); });
+window.addEventListener("unhandledrejection", function(e){ reportError("PROMISE", e.reason); });
+
+/* ================= species ================= */
+// speed in px/sec at a 1000px-wide reference screen; scaled to actual size later.
+const SPECIES = {
+  beetle:{
+    label:"Beetle", size:30, speed:660, accel:14,
+    dart:[.16,.40], pause:[.30,1.30], turnBias:2.4, edgeHug:0, glow:14,
+    color:"#f0de6b",
+    note:"Explosive, short, and straight. Long freezes between runs. The best starting point for most cats — it reads most like a scuttling insect."
+  },
+  mouse:{
+    label:"Mouse", size:36, speed:520, accel:9,
+    dart:[.45,1.05], pause:[.40,1.50], turnBias:1.1, edgeHug:.9, glow:12,
+    color:"#d8dcc8",
+    note:"Runs the edges of the screen the way a real mouse hugs a skirting board, in longer sweeps. Good for cats who like a chase over a pounce."
+  },
+  moth:{
+    label:"Moth", size:34, speed:400, accel:5, continuous:true,
+    dart:[.6,1.4], pause:[.12,.40], turnBias:5.5, edgeHug:0, glow:20, vertical:true,
+    color:"#e8e3c4",
+    note:"Fluttering arcs that drift upward and never quite settle. Draws out cats who hunt insects and like to bat at things above them."
+  },
+  fish:{
+    label:"Fish", size:38, speed:290, accel:4, continuous:true,
+    dart:[1.0,2.2], pause:[.30,.90], turnBias:1.6, edgeHug:0, glow:16,
+    color:"#62b4e0",
+    note:"Slow, smooth, and unhurried. The gentle option — worth trying with kittens, senior cats, or anyone the faster quarry overwhelms."
+  }
+};
+const EXTRA = {
+  snake:{
+    label:"Snake", size:36, speed:640, accel:14, continuous:true, trail:true,
+    dart:[.8,2.0], pause:[.35,1.1], turnBias:2.8, edgeHug:.3, glow:16,
+    color:"#7ae062",
+    note:"Smooth serpentine S-curves with a flicking forked tongue. Coils tight when paused, then strikes with explosive speed. Ideal for cats fascinated by slithering motion."
+  },
+  lizard:{
+    label:"Lizard", size:33, speed:760, accel:22,
+    dart:[.18,.45], pause:[.40,1.3], turnBias:3.2, edgeHug:.2, glow:15,
+    color:"#5fd6c4",
+    note:"Lightning-fast dashes with splayed scurrying legs and a whipping tail. Freezes flat against the ground, then rockets sideways."
+  },
+  laser:{
+    label:"Laser", size:24, speed:1000, accel:28, continuous:true,
+    dart:[.12,.35], pause:[.15,.55], turnBias:7.0, edgeHug:0, glow:26, laser:true,
+    color:"#f0de6b",
+    note:"Hyper-speed radiant light dot. Bounces sharply off walls, pulses with high contrast, and leaves a fading light ribbon. Triggers instant predatory chase."
+  },
+  frog:{
+    label:"Frog", size:32, speed:820, accel:22, hop:true,
+    dart:[.22,.38], pause:[.65,1.9], turnBias:2.5, edgeHug:0, glow:16,
+    color:"#a4e34b",
+    note:"Crouches tight and pulses, then launches into high springy leaps with webbed legs stretching wide."
+  },
+  spider:{
+    label:"Spider", size:31, speed:800, accel:19,
+    dart:[.09,.24], pause:[.55,2.0], turnBias:3.1, edgeHug:.25, glow:14,
+    color:"#f2c85a",
+    note:"Skitters. Very short bursts, wild changes of direction, then dead still for a long time. The most erratic thing on the list and the one that tends to work on cats who've stopped noticing the beetle."
+  },
+  cricket:{
+    label:"Cricket", size:33, speed:980, accel:24, hop:true,
+    dart:[.24,.36], pause:[.75,2.3], turnBias:2.3, edgeHug:0, glow:15,
+    color:"#c3e06a",
+    note:"Leaps instead of running. Each move is one big hop that arcs up off the floor and lands hard, followed by a long sit. Cats that pounce rather than chase usually prefer this one."
+  },
+  dragonfly:{
+    label:"Dragonfly", size:35, speed:860, accel:22, continuous:true, bob:true,
+    dart:[.16,.42], pause:[.45,1.4], turnBias:3.6, edgeHug:0, glow:19,
+    color:"#93dcf0",
+    note:"Hangs in one spot, drifting slightly, then snaps sideways faster than anything else here. Built for cats who bat at things in the air rather than pinning them to the floor."
+  },
+  worm:{
+    label:"Worm", size:29, speed:340, accel:3, continuous:true, trail:true,
+    dart:[1.2,2.8], pause:[.2,.6], turnBias:1.9, edgeHug:0, glow:12,
+    color:"#f0cf9a",
+    note:"A slow undulating crawl with a long body that follows the path behind it. The least alarming option — worth trying on nervous cats, kittens, and anyone the fast quarry sends running."
+  },
+  ant:{
+    label:"Ant", size:22, speed:560, accel:16,
+    dart:[.12,.30], pause:[.20,.85], turnBias:2.0, edgeHug:.15, glow:10,
+    color:"#c47a4a",
+    note:"Small, quick, and low to the ground, in short determined lines rather than the beetle's scuttle. A good second, smaller quarry once a cat has mastered the beetle."
+  },
+  butterfly:{
+    label:"Butterfly", size:34, speed:340, accel:5, continuous:true,
+    dart:[.7,1.6], pause:[.15,.5], turnBias:6.2, edgeHug:0, glow:18, vertical:true,
+    color:"#e0a9d8",
+    note:"Wide lazy arcs that drift and double back on themselves rather than fly a straight line. Gentle and unhurried — pairs well with the moth for cats who like to bat upward."
+  },
+  shrimp:{
+    label:"Shrimp", size:26, speed:520, accel:10, continuous:true,
+    dart:[.3,.7], pause:[.25,.9], turnBias:3.4, edgeHug:0, glow:13,
+    color:"#f0a888",
+    note:"Darts backward in sharp little flicks, the way a real shrimp snaps its tail to escape. Best with the Underwater backdrop."
+  },
+  jellyfish:{
+    label:"Jellyfish", size:36, speed:200, accel:3, continuous:true, bob:true, vertical:true,
+    dart:[1.0,2.0], pause:[.4,1.0], turnBias:1.0, edgeHug:0, glow:22,
+    color:"#c9a6f2",
+    note:"Drifts more than it swims, pulsing gently as it rises. The calmest thing here — closer to a lava lamp than prey — good for cats the faster quarry overwhelms."
+  }
+};
+Object.assign(SPECIES, EXTRA);
+const ORDER = [
+  "beetle","snake","mouse","laser",
+  "lizard","spider","cricket","frog",
+  "ant","moth","butterfly","dragonfly",
+  "fish","shrimp","jellyfish","worm"
+];
+
+/* ================= drawing ================= */
+function halo(ctx,c,g){ ctx.shadowColor=c; ctx.shadowBlur=g; }
+
+function drawBeetle(ctx,s,c,ph,moving){
+  const w=s*.72, h=s;
+  halo(ctx,c,14);
+  ctx.strokeStyle=c; ctx.lineWidth=Math.max(2,s*.075); ctx.lineCap="round";
+  const sw = moving? Math.sin(ph*22)*.45 : 0;
+  for(let i=0;i<3;i++){
+    const y=-h*.22+i*h*.24, sp=(i===1?1:.85), o=(i%2?sw:-sw);
+    for(const dir of [-1,1]){
+      ctx.beginPath(); ctx.moveTo(dir*w*.34,y);
+      ctx.lineTo(dir*w*.92*sp, y+o*h*.2+h*.06);
+      ctx.stroke();
+    }
+  }
+  ctx.fillStyle=c;
+  ctx.beginPath(); ctx.ellipse(0,0,w*.44,h*.54,0,0,7); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(0,-h*.52,w*.3,h*.2,0,0,7); ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.strokeStyle="rgba(10,14,18,.75)"; ctx.lineWidth=Math.max(1.6,s*.06);
+  ctx.beginPath(); ctx.moveTo(0,-h*.28); ctx.lineTo(0,h*.46); ctx.stroke();
+  ctx.lineWidth=Math.max(1.4,s*.05); ctx.strokeStyle=c;
+  for(const dir of [-1,1]){
+    ctx.beginPath(); ctx.moveTo(dir*w*.14,-h*.62);
+    ctx.quadraticCurveTo(dir*w*.5,-h*.92,dir*w*.42,-h*1.12); ctx.stroke();
+  }
+}
+
+function drawMouse(ctx,s,c,ph,moving){
+  const w=s*.62,h=s;
+  halo(ctx,c,12);
+  ctx.strokeStyle=c; ctx.lineWidth=Math.max(2,s*.06); ctx.lineCap="round";
+  const wag=Math.sin(ph*(moving?13:3))*.55;
+  ctx.beginPath(); ctx.moveTo(0,h*.5);
+  ctx.quadraticCurveTo(wag*w*1.5,h*.95, wag*w*1.9, h*1.35); ctx.stroke();
+  ctx.fillStyle=c;
+  ctx.beginPath(); ctx.ellipse(0,0,w*.5,h*.56,0,0,7); ctx.fill();
+  for(const dir of [-1,1]){
+    ctx.beginPath(); ctx.ellipse(dir*w*.42,-h*.42,w*.3,w*.3,0,0,7); ctx.fill();
+  }
+  ctx.beginPath(); ctx.ellipse(0,-h*.5,w*.36,h*.3,0,0,7); ctx.fill();
+  ctx.shadowBlur=0;
+}
+
+function drawMoth(ctx,s,c,ph){
+  const w=s*1.08,h=s*.9, flap=.28+Math.abs(Math.sin(ph*15))*.72;
+  halo(ctx,c,20);
+  ctx.fillStyle=c;
+  for(const dir of [-1,1]){
+    ctx.save(); ctx.scale(dir*flap,1);
+    ctx.beginPath();                                  // forewing, swept back
+    ctx.moveTo(w*.03,-h*.44);
+    ctx.quadraticCurveTo(w*.70,-h*.46, w*.94,h*.04);
+    ctx.quadraticCurveTo(w*.58,h*.20, w*.05,h*.16);
+    ctx.closePath(); ctx.fill();
+    ctx.globalAlpha=.8;
+    ctx.beginPath();                                  // hindwing
+    ctx.moveTo(w*.04,h*.05);
+    ctx.quadraticCurveTo(w*.52,h*.26, w*.40,h*.64);
+    ctx.quadraticCurveTo(w*.18,h*.58, w*.03,h*.40);
+    ctx.closePath(); ctx.fill();
+    ctx.globalAlpha=1;
+    ctx.restore();
+  }
+  ctx.fillStyle="#fdf6d8";
+  ctx.beginPath(); ctx.ellipse(0,h*.02,w*.095,h*.46,0,0,7); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(0,-h*.44,w*.105,h*.11,0,0,7); ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.strokeStyle=c; ctx.lineWidth=Math.max(1.4,s*.045); ctx.lineCap="round";
+  for(const dir of [-1,1]){
+    ctx.beginPath(); ctx.moveTo(dir*w*.05,-h*.5);
+    ctx.quadraticCurveTo(dir*w*.34,-h*.74,dir*w*.22,-h*.94); ctx.stroke();
+  }
+}
+
+function drawFish(ctx,s,c,ph){
+  const w=s*.9,h=s*.56, sweep=Math.sin(ph*7)*.5;
+  halo(ctx,c,16);
+  ctx.fillStyle=c;
+  ctx.beginPath();
+  ctx.moveTo(0,-h*.95);
+  ctx.bezierCurveTo(w*.6,-h*.5, w*.55,h*.5, 0,h*.85);
+  ctx.bezierCurveTo(-w*.55,h*.5,-w*.6,-h*.5,0,-h*.95);
+  ctx.closePath(); ctx.fill();
+  ctx.save(); ctx.translate(0,h*.8); ctx.rotate(sweep*.5);
+  ctx.beginPath(); ctx.moveTo(0,0);
+  ctx.lineTo(-w*.42,h*.85); ctx.lineTo(0,h*.5); ctx.lineTo(w*.42,h*.85);
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+  ctx.beginPath(); ctx.moveTo(w*.2,0); ctx.lineTo(w*.62,h*.28); ctx.lineTo(w*.18,h*.34); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-w*.2,0); ctx.lineTo(-w*.62,h*.28); ctx.lineTo(-w*.18,h*.34); ctx.closePath(); ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.fillStyle="#0d1319";
+  ctx.beginPath(); ctx.ellipse(-w*.17,-h*.5,s*.055,s*.055,0,0,7); ctx.fill();
+}
+
+function drawSpider(ctx,s,c,ph,moving){
+  halo(ctx,c,14);
+  ctx.strokeStyle=c; ctx.lineCap="round"; ctx.lineJoin="round";
+  ctx.lineWidth=Math.max(1.8,s*.055);
+  const bend=[-.55,-.15,.20,.58], reach=[.95,1.05,1.0,.86];
+  for(let i=0;i<4;i++){
+    const by=-s*.24+i*s*.12;
+    for(const dir of [-1,1]){
+      const sw=Math.sin(ph*19+i*1.15+(dir<0?1.7:0))*(moving?.30:.05);
+      ctx.beginPath();
+      ctx.moveTo(dir*s*.13,by);
+      ctx.lineTo(dir*s*.50*reach[i], by-s*.30+sw*s*.16);
+      ctx.lineTo(dir*s*.92*reach[i], by+s*.34+bend[i]*s*.30+sw*s*.26);
+      ctx.stroke();
+    }
+  }
+  ctx.fillStyle=c;
+  ctx.beginPath(); ctx.ellipse(0,s*.24,s*.30,s*.37,0,0,7); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(0,-s*.20,s*.22,s*.20,0,0,7); ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.fillStyle="rgba(12,16,20,.6)";
+  for(const dir of [-1,1]){ ctx.beginPath(); ctx.arc(dir*s*.09,-s*.28,s*.045,0,7); ctx.fill(); }
+}
+
+function drawCricket(ctx,s,c,ph,moving){
+  halo(ctx,c,15);
+  ctx.strokeStyle=c; ctx.lineCap="round"; ctx.lineJoin="round";
+  ctx.lineWidth=Math.max(2,s*.07);
+  const kick=moving?.42:0;
+  for(const dir of [-1,1]){                       // big folded hind legs
+    ctx.beginPath();
+    ctx.moveTo(dir*s*.16,s*.16);
+    ctx.lineTo(dir*s*.52,-s*.14-kick*s*.16);
+    ctx.lineTo(dir*s*.40,s*.60+kick*s*.30);
+    ctx.stroke();
+  }
+  ctx.lineWidth=Math.max(1.5,s*.05);
+  for(const dir of [-1,1]){                       // front legs
+    ctx.beginPath(); ctx.moveTo(dir*s*.14,-s*.16);
+    ctx.lineTo(dir*s*.44,s*.10); ctx.stroke();
+  }
+  ctx.fillStyle=c;
+  ctx.beginPath(); ctx.ellipse(0,s*.06,s*.26,s*.50,0,0,7); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(0,-s*.44,s*.19,s*.20,0,0,7); ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.strokeStyle="rgba(12,16,20,.5)"; ctx.lineWidth=Math.max(1.4,s*.05);
+  ctx.beginPath(); ctx.moveTo(0,-s*.16); ctx.lineTo(0,s*.44); ctx.stroke();
+  ctx.strokeStyle=c; ctx.lineWidth=Math.max(1.3,s*.04);
+  for(const dir of [-1,1]){
+    ctx.beginPath(); ctx.moveTo(dir*s*.07,-s*.56);
+    ctx.quadraticCurveTo(dir*s*.42,-s*.86,dir*s*.30,-s*1.10); ctx.stroke();
+  }
+}
+
+function drawDragonfly(ctx,s,c,ph){
+  const flap=.25+Math.abs(Math.sin(ph*26))*.75;
+  halo(ctx,c,19);
+  ctx.fillStyle=c;
+  ctx.save(); ctx.globalAlpha=.5;
+  for(const dir of [-1,1]){
+    for(const wg of [[-.20,-.32],[.06,.20]]){     // fore and hind pairs
+      ctx.save();
+      ctx.translate(dir*s*.10,s*wg[0]);
+      ctx.rotate(dir*wg[1]); ctx.scale(dir*flap,1);
+      ctx.beginPath(); ctx.ellipse(s*.52,0,s*.54,s*.10,0,0,7); ctx.fill();
+      ctx.restore();
+    }
+  }
+  ctx.restore();
+  ctx.beginPath(); ctx.ellipse(0,-s*.18,s*.15,s*.22,0,0,7); ctx.fill();   // thorax
+  ctx.beginPath();                                                        // abdomen
+  ctx.moveTo(-s*.09,-s*.04);
+  ctx.quadraticCurveTo(-s*.05,s*.70,0,s*.92);
+  ctx.quadraticCurveTo(s*.05,s*.70,s*.09,-s*.04);
+  ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(0,-s*.44,s*.20,s*.16,0,0,7); ctx.fill();   // head
+  ctx.shadowBlur=0;
+  ctx.fillStyle="rgba(12,16,20,.55)";
+  for(const dir of [-1,1]){ ctx.beginPath(); ctx.arc(dir*s*.10,-s*.47,s*.075,0,7); ctx.fill(); }
+}
+
+function drawWorm(ctx,s,c,ph){          // static S-curve, used for the picker chips
+  halo(ctx,c,12);
+  ctx.fillStyle=c;
+  for(let i=0;i<16;i++){
+    const f=i/15, y=(-.85+f*1.7)*s, x=Math.sin(f*5.6+ph)*s*.30;
+    ctx.beginPath(); ctx.arc(x,y,s*(.13+.16*Math.sin(Math.PI*(1-f))),0,7); ctx.fill();
+  }
+  ctx.beginPath(); ctx.arc(Math.sin(ph)*s*.30,-s*.85,s*.27,0,7); ctx.fill();
+  ctx.shadowBlur=0;
+}
+
+function drawWormTrail(ctx,p){          // in play: the body follows the actual path
+  const t=p.trail, c=p.s.color;
+  ctx.save(); ctx.shadowColor=c; ctx.shadowBlur=12; ctx.fillStyle=c;
+  for(let i=t.length-1;i>=0;i--){
+    const f=1-i/t.length;
+    ctx.globalAlpha=.30+.70*f;
+    ctx.beginPath();
+    ctx.arc(t[i].x,t[i].y,Math.max(1,p.size*(.10+.19*Math.sin(Math.PI*Math.min(1,f*1.2)))),0,7);
+    ctx.fill();
+  }
+  ctx.globalAlpha=1;
+  ctx.beginPath(); ctx.arc(p.x,p.y,p.size*.28,0,7); ctx.fill();
+  ctx.restore();
+}
+
+function drawAnt(ctx,s,c,ph,moving){
+  halo(ctx,c,10);
+  ctx.fillStyle=c;
+  ctx.beginPath(); ctx.ellipse(0,-s*.5,s*.20,s*.18,0,0,7); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(0,-s*.12,s*.16,s*.20,0,0,7); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(0,s*.32,s*.26,s*.34,0,0,7); ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.strokeStyle=c; ctx.lineWidth=Math.max(1.2,s*.045); ctx.lineCap="round";
+  const kick = moving? Math.sin(ph*24)*.5 : 0;
+  for(let i=0;i<3;i++){
+    const y=-s*.08+i*s*.16, o=(i%2? kick:-kick);
+    for(const dir of [-1,1]){
+      ctx.beginPath(); ctx.moveTo(dir*s*.10,y);
+      ctx.lineTo(dir*s*.42, y+o*s*.14+s*.05); ctx.stroke();
+    }
+  }
+  ctx.lineWidth=Math.max(1,s*.035);
+  for(const dir of [-1,1]){
+    ctx.beginPath(); ctx.moveTo(dir*s*.06,-s*.62);
+    ctx.quadraticCurveTo(dir*s*.22,-s*.78,dir*s*.16,-s*.92); ctx.stroke();
+  }
+}
+
+function drawButterfly(ctx,s,c,ph){
+  const w=s*1.02,h=s*.86, flap=.3+Math.abs(Math.sin(ph*10))*.7;
+  halo(ctx,c,18);
+  ctx.fillStyle=c;
+  for(const dir of [-1,1]){
+    ctx.save(); ctx.scale(dir*flap,1);
+    ctx.beginPath();
+    ctx.moveTo(w*.04,-h*.10);
+    ctx.quadraticCurveTo(w*.60,-h*.78, w*.92,-h*.20);
+    ctx.quadraticCurveTo(w*.62,h*.06, w*.05,h*.14);
+    ctx.closePath(); ctx.fill();
+    ctx.globalAlpha=.85;
+    ctx.beginPath();
+    ctx.moveTo(w*.05,h*.10);
+    ctx.quadraticCurveTo(w*.48,h*.30, w*.34,h*.66);
+    ctx.quadraticCurveTo(w*.12,h*.52, w*.03,h*.30);
+    ctx.closePath(); ctx.fill();
+    ctx.globalAlpha=1;
+    ctx.fillStyle="#fdf6d8";
+    ctx.beginPath(); ctx.ellipse(w*.42,-h*.24,w*.07,w*.07,0,0,7); ctx.fill();
+    ctx.fillStyle=c;
+    ctx.restore();
+  }
+  ctx.fillStyle="#2a2018";
+  ctx.beginPath(); ctx.ellipse(0,h*.02,w*.06,h*.42,0,0,7); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(0,-h*.42,w*.08,h*.09,0,0,7); ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.strokeStyle=c; ctx.lineWidth=Math.max(1.2,s*.04); ctx.lineCap="round";
+  for(const dir of [-1,1]){
+    ctx.beginPath(); ctx.moveTo(dir*w*.04,-h*.48);
+    ctx.quadraticCurveTo(dir*w*.26,-h*.68,dir*w*.16,-h*.86); ctx.stroke();
+  }
+}
+
+function drawShrimp(ctx,s,c,ph){
+  const w=s*.62,h=s*.92, flick=Math.sin(ph*8)*.4;
+  halo(ctx,c,13);
+  ctx.save(); ctx.globalAlpha=.85; ctx.fillStyle=c;
+  ctx.beginPath();
+  ctx.moveTo(0,-h*.5);
+  ctx.quadraticCurveTo(w*.7,-h*.1, w*.42,h*.35);
+  ctx.quadraticCurveTo(w*.30,h*.55+flick*h*.12, 0,h*.62+flick*h*.18);
+  ctx.quadraticCurveTo(-w*.30,h*.55+flick*h*.12,-w*.42,h*.35);
+  ctx.quadraticCurveTo(-w*.7,-h*.1, 0,-h*.5);
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+  ctx.save(); ctx.translate(0,h*.6+flick*h*.18); ctx.rotate(flick*.3);
+  ctx.fillStyle=c;
+  ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-w*.34,h*.4); ctx.lineTo(0,h*.22); ctx.lineTo(w*.34,h*.4);
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+  ctx.shadowBlur=0;
+  ctx.strokeStyle=c; ctx.lineWidth=Math.max(1.2,s*.04); ctx.lineCap="round";
+  for(const dir of [-1,1]){
+    ctx.beginPath(); ctx.moveTo(dir*w*.10,-h*.46);
+    ctx.quadraticCurveTo(dir*w*.5,-h*.7,dir*w*.62,-h*1.0); ctx.stroke();
+  }
+  ctx.fillStyle="#241a14";
+  ctx.beginPath(); ctx.arc(-w*.1,-h*.42,s*.045,0,7); ctx.fill();
+}
+
+function drawJellyfish(ctx,s,c,ph){
+  const pulse=.85+Math.sin(ph*3)*.15, w=s*pulse, h=s*.62*pulse;
+  halo(ctx,c,22);
+  ctx.fillStyle=c;
+  ctx.beginPath();
+  ctx.moveTo(-w*.5,0);
+  ctx.quadraticCurveTo(-w*.5,-h*1.05, 0,-h*1.05);
+  ctx.quadraticCurveTo(w*.5,-h*1.05, w*.5,0);
+  ctx.quadraticCurveTo(w*.22,h*.14,0,0);
+  ctx.quadraticCurveTo(-w*.22,h*.14,-w*.5,0);
+  ctx.closePath(); ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.strokeStyle=c; ctx.lineWidth=Math.max(1.3,s*.045); ctx.lineCap="round"; ctx.globalAlpha=.7;
+  for(let i=-2;i<=2;i++){
+    const bx=i*w*.16, sway=Math.sin(ph*4+i*1.3)*s*.18;
+    ctx.beginPath(); ctx.moveTo(bx,h*.05);
+    ctx.quadraticCurveTo(bx+sway*.5,h*.55, bx+sway,h*.95);
+    ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+}
+
+function drawSnake(ctx,s,c,ph,moving){
+  halo(ctx,c,16);
+  ctx.lineCap="round"; ctx.lineJoin="round";
+  const pts = [];
+  for(let i=0; i<18; i++){
+    const f = i/17;
+    const y = (-s*0.8 + f*s*1.6);
+    const x = Math.sin(f*Math.PI*2.5 + (moving?ph*8:ph))*s*0.32;
+    pts.push({x, y});
+  }
+  for(let i=pts.length-1; i>0; i--){
+    const f = 1 - (i/pts.length);
+    const w = s * (0.12 + 0.22*Math.sin(Math.PI*Math.min(1, f*1.2)));
+    ctx.strokeStyle = c; ctx.lineWidth = Math.max(2, w);
+    ctx.beginPath();
+    ctx.moveTo(pts[i].x, pts[i].y);
+    ctx.lineTo(pts[i-1].x, pts[i-1].y);
+    ctx.stroke();
+    if(i%2 === 0){
+      ctx.fillStyle = "rgba(10,14,18,0.7)";
+      ctx.beginPath();
+      ctx.ellipse(pts[i].x, pts[i].y, w*0.35, w*0.25, 0, 0, 7);
+      ctx.fill();
+    }
+  }
+  const hx = pts[0].x, hy = pts[0].y;
+  ctx.fillStyle = c;
+  ctx.beginPath(); ctx.ellipse(hx, hy, s*0.24, s*0.28, 0, 0, 7); ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = "#0c1218";
+  ctx.beginPath(); ctx.arc(hx - s*0.12, hy - s*0.06, s*0.045, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(hx + s*0.12, hy - s*0.06, s*0.045, 0, 7); ctx.fill();
+  const tlen = s*0.32 * (0.3 + Math.abs(Math.sin(ph*14))*0.7);
+  ctx.strokeStyle = "#f05a5a"; ctx.lineWidth = Math.max(1.2, s*0.04);
+  ctx.beginPath();
+  ctx.moveTo(hx, hy - s*0.24);
+  ctx.lineTo(hx, hy - s*0.24 - tlen);
+  ctx.lineTo(hx - s*0.08, hy - s*0.24 - tlen - s*0.08);
+  ctx.moveTo(hx, hy - s*0.24 - tlen);
+  ctx.lineTo(hx + s*0.08, hy - s*0.24 - tlen - s*0.08);
+  ctx.stroke();
+}
+
+function drawSnakeTrail(ctx, p){
+  const t = p.trail, c = p.s.color;
+  if(t.length < 2) return;
+  ctx.save();
+  ctx.shadowColor = c; ctx.shadowBlur = 14;
+  ctx.lineCap = "round"; ctx.lineJoin = "round";
+  for(let i=t.length-1; i>0; i--){
+    const f = 1 - (i/t.length);
+    const w = Math.max(2, p.size * (0.12 + 0.28*Math.sin(Math.PI*Math.min(1, f*1.15))));
+    ctx.strokeStyle = c; ctx.lineWidth = w;
+    ctx.globalAlpha = 0.45 + 0.55*f;
+    ctx.beginPath();
+    ctx.moveTo(t[i].x, t[i].y);
+    ctx.lineTo(t[i-1].x, t[i-1].y);
+    ctx.stroke();
+    if(i % 2 === 0 && i < t.length - 2){
+      ctx.fillStyle = "rgba(12,18,24,0.65)";
+      ctx.beginPath();
+      ctx.ellipse(t[i].x, t[i].y, w*0.32, w*0.22, 0, 0, 7);
+      ctx.fill();
+    }
+  }
+  ctx.globalAlpha = 1;
+  ctx.save();
+  ctx.translate(p.x, p.y);
+  ctx.rotate(p.head + Math.PI/2);
+  ctx.fillStyle = c;
+  ctx.beginPath();
+  ctx.moveTo(0, -p.size*0.48);
+  ctx.lineTo(p.size*0.30, -p.size*0.05);
+  ctx.lineTo(p.size*0.18, p.size*0.28);
+  ctx.lineTo(-p.size*0.18, p.size*0.28);
+  ctx.lineTo(-p.size*0.30, -p.size*0.05);
+  ctx.closePath();
+  ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = "#0c1218";
+  ctx.beginPath(); ctx.ellipse(-p.size*0.14, -p.size*0.10, p.size*0.05, p.size*0.07, -0.2, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(p.size*0.14, -p.size*0.10, p.size*0.05, p.size*0.07, 0.2, 0, 7); ctx.fill();
+  ctx.fillStyle = c;
+  ctx.beginPath(); ctx.ellipse(-p.size*0.14, -p.size*0.10, p.size*0.018, p.size*0.05, -0.2, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(p.size*0.14, -p.size*0.10, p.size*0.018, p.size*0.05, 0.2, 0, 7); ctx.fill();
+
+  const tFlick = Math.sin(p.ph * 15);
+  if(tFlick > 0 || p.state === "pause"){
+    const tlen = p.size * 0.42 * (0.4 + Math.abs(tFlick)*0.6);
+    ctx.strokeStyle = "#f25656";
+    ctx.lineWidth = Math.max(1.4, p.size*0.045);
+    ctx.beginPath();
+    ctx.moveTo(0, -p.size*0.46);
+    ctx.lineTo(0, -p.size*0.46 - tlen);
+    ctx.lineTo(-p.size*0.10, -p.size*0.46 - tlen - p.size*0.10);
+    ctx.moveTo(0, -p.size*0.46 - tlen);
+    ctx.lineTo(p.size*0.10, -p.size*0.46 - tlen - p.size*0.10);
+    ctx.stroke();
+  }
+  ctx.restore();
+  ctx.restore();
+}
+
+function drawLizard(ctx,s,c,ph,moving){
+  halo(ctx,c,15);
+  ctx.lineCap="round"; ctx.lineJoin="round";
+  const legSwing = moving ? Math.sin(ph*20)*0.55 : 0;
+  const tailSway = Math.sin(ph*(moving?16:4))*0.45;
+  ctx.strokeStyle = c; ctx.lineWidth = Math.max(2, s*0.07);
+  ctx.beginPath();
+  ctx.moveTo(0, s*0.35);
+  ctx.quadraticCurveTo(tailSway*s*0.6, s*0.85, tailSway*s*1.2, s*1.35);
+  ctx.stroke();
+
+  const legPairs = [
+    { y: -s*0.15, reach: s*0.55, swing: legSwing },
+    { y: s*0.25, reach: s*0.60, swing: -legSwing }
+  ];
+  legPairs.forEach(lp => {
+    [-1, 1].forEach(dir => {
+      ctx.lineWidth = Math.max(1.8, s*0.055);
+      const kneeX = dir * lp.reach * 0.65;
+      const kneeY = lp.y - s*0.15 + dir*lp.swing*s*0.20;
+      const footX = dir * lp.reach;
+      const footY = lp.y + s*0.10 + dir*lp.swing*s*0.28;
+      ctx.beginPath();
+      ctx.moveTo(dir*s*0.12, lp.y);
+      ctx.lineTo(kneeX, kneeY);
+      ctx.lineTo(footX, footY);
+      ctx.stroke();
+      ctx.lineWidth = Math.max(1.1, s*0.035);
+      [-0.06, 0, 0.06].forEach(offset => {
+        ctx.beginPath();
+        ctx.moveTo(footX, footY);
+        ctx.lineTo(footX + dir*s*0.10, footY + offset*s + dir*lp.swing*s*0.05);
+        ctx.stroke();
+      });
+    });
+  });
+
+  ctx.fillStyle = c;
+  ctx.beginPath(); ctx.ellipse(0, s*0.06, s*0.22, s*0.48, 0, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(0, -s*0.42, s*0.20, s*0.24, 0, 0, 7); ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = "rgba(10,14,18,0.55)";
+  for(let i=-2; i<=2; i++){
+    ctx.beginPath(); ctx.arc(0, s*0.08 + i*s*0.10, s*0.035, 0, 7); ctx.fill();
+  }
+  for(const dir of [-1, 1]){
+    ctx.beginPath(); ctx.arc(dir*s*0.11, -s*0.46, s*0.045, 0, 7); ctx.fill();
+  }
+}
+
+function drawLaser(ctx,s,c,ph){
+  const pulse = 0.85 + Math.sin(ph*18)*0.15;
+  halo(ctx, c, 24);
+  ctx.fillStyle = c;
+  ctx.beginPath(); ctx.arc(0, 0, s*0.50*pulse, 0, 7); ctx.fill();
+  ctx.shadowBlur = 8;
+  ctx.fillStyle = "#ffffff";
+  ctx.beginPath(); ctx.arc(0, 0, s*0.24*pulse, 0, 7); ctx.fill();
+  ctx.strokeStyle = c; ctx.lineWidth = Math.max(1.2, s*0.05);
+  for(let i=0; i<4; i++){
+    const a = ph*5 + i*Math.PI/2;
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(a)*s*0.35, Math.sin(a)*s*0.35);
+    ctx.lineTo(Math.cos(a)*s*0.75*pulse, Math.sin(a)*s*0.75*pulse);
+    ctx.stroke();
+  }
+  ctx.shadowBlur = 0;
+}
+
+function drawFrog(ctx,s,c,ph,moving){
+  halo(ctx,c,16);
+  ctx.lineCap="round"; ctx.lineJoin="round";
+  const kick = moving ? 0.45 : 0;
+  for(const dir of [-1, 1]){
+    ctx.strokeStyle = c; ctx.lineWidth = Math.max(2, s*0.07);
+    ctx.beginPath();
+    ctx.moveTo(dir*s*0.18, s*0.20);
+    ctx.lineTo(dir*s*0.55, s*0.05 - kick*s*0.15);
+    ctx.lineTo(dir*s*0.48, s*0.62 + kick*s*0.42);
+    ctx.stroke();
+    ctx.lineWidth = Math.max(1.2, s*0.04);
+    for(const t of [-0.08, 0, 0.08]){
+      ctx.beginPath();
+      ctx.moveTo(dir*s*0.48, s*0.62 + kick*s*0.42);
+      ctx.lineTo(dir*s*0.58 + dir*t*s, s*0.78 + kick*s*0.48);
+      ctx.stroke();
+    }
+  }
+  for(const dir of [-1, 1]){
+    ctx.strokeStyle = c; ctx.lineWidth = Math.max(1.4, s*0.05);
+    ctx.beginPath();
+    ctx.moveTo(dir*s*0.16, -s*0.15);
+    ctx.lineTo(dir*s*0.40, s*0.02);
+    ctx.stroke();
+  }
+  ctx.fillStyle = c;
+  ctx.beginPath(); ctx.ellipse(0, s*0.08, s*0.36, s*0.42, 0, 0, 7); ctx.fill();
+  for(const dir of [-1, 1]){
+    ctx.beginPath(); ctx.arc(dir*s*0.22, -s*0.34, s*0.14, 0, 7); ctx.fill();
+  }
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = "#0a1016";
+  for(const dir of [-1, 1]){
+    ctx.beginPath(); ctx.ellipse(dir*s*0.22, -s*0.34, s*0.045, s*0.08, dir*0.2, 0, 7); ctx.fill();
+  }
+  if(!moving){
+    const throat = 0.5 + Math.sin(ph*6)*0.5;
+    ctx.fillStyle = "rgba(255,255,255,0.25)";
+    ctx.beginPath(); ctx.ellipse(0, -s*0.12, s*0.18*throat, s*0.12*throat, 0, 0, 7); ctx.fill();
+  }
+}
+
+const DRAW = {beetle:drawBeetle, mouse:drawMouse, moth:drawMoth, fish:drawFish,
+              spider:drawSpider, cricket:drawCricket, dragonfly:drawDragonfly, worm:drawWorm,
+              ant:drawAnt, butterfly:drawButterfly, shrimp:drawShrimp, jellyfish:drawJellyfish,
+              snake:drawSnake, lizard:drawLizard, laser:drawLaser, frog:drawFrog};
+
+/* ================= backdrops ================= */
+/* Each backdrop swaps the ground tint, the tufts prey hides behind, and the
+   kind of debris drifting across the floor — same system, different skin. */
+const BACKDROPS = {
+  den:{
+    label:"Den", field:"#080c10",
+    grit:"120,140,120", blobA:"96,112,104", blobB:"150,170,150",
+    tuft:["#31452c","#1d281c"],
+    moteKind:"leaf", moteColors:["#33421f","#3d3722","#2a3a2b","#453a20"],
+    moteDensity:26000
+  },
+  underwater:{
+    label:"Underwater", field:"#071820",
+    grit:"90,150,170", blobA:"70,120,140", blobB:"120,180,190",
+    tuft:["#1c4a3e","#123028"],
+    moteKind:"bubble", moteColors:["#bfe9f5","#8fd0e6","#d8f3fa"],
+    moteDensity:48000
+  },
+  meadow:{
+    label:"Meadow", field:"#141a0e",
+    grit:"150,150,90", blobA:"120,120,70", blobB:"180,180,120",
+    tuft:["#4a4a1f","#333312"],
+    moteKind:"petal", moteColors:["#e8b7d0","#f0cf9a","#d9e07a"],
+    moteDensity:29000
+  },
+  nightfall:{
+    label:"Nightfall", field:"#05070c",
+    grit:"90,100,140", blobA:"70,80,120", blobB:"110,120,170",
+    tuft:["#1b2038","#11142a"],
+    moteKind:"ember", moteColors:["#f2c85a","#f08a5a","#f2e28a"],
+    moteDensity:38000
+  }
+};
+let backdrop="den";
+const FILTER_KEYS=["none","underwater","thermal","dream"];
+let filterMode="none";
+
+/* ================= cover ================= */
+/* Real prey runs to cover rather than looping the open floor, and a cat that
+   watches a tuft twitch will sit on it. These are static, dim and low-contrast
+   so they read as scenery rather than competing with the quarry for attention. */
+let covers=[], groundCv=null, motes=[];
+const rand=(a,b)=>a+Math.random()*(b-a);
+const DPR=()=>Math.min(2,devicePixelRatio||1);
+
+function makeCovers(W,H){
+  covers=[];
+  const n = Math.min(W,H) < 460 ? 2 : 3;
+  for(let i=0;i<n;i++){
+    for(let t=0;t<160;t++){
+      const r=Math.min(W,H)*rand(.085,.13);
+      const x=rand(r*1.3,W-r*1.3), y=rand(r*1.3,H-r*1.3);
+      if(covers.every(c=>Math.hypot(c.x-x,c.y-y)>(c.r+r)*1.7)){
+        covers.push({x,y,r,seed:1+Math.random()*9000,shake:0}); break;
+      }
+    }
+  }
+  // Each tuft gets its own bitmap so it can be shaken independently when a paw
+  // lands on it, without redrawing every blade each frame.
+  const dpr=DPR();
+  covers.forEach(c=>{
+    const pad=c.r*1.5, side=Math.ceil(c.r*2+pad*2);
+    const cv=document.createElement("canvas");
+    cv.width=Math.round(side*dpr); cv.height=Math.round(side*dpr);
+    const x=cv.getContext("2d"); x.setTransform(dpr,0,0,dpr,0,0);
+    x.translate(c.r+pad-c.x, c.r+pad-c.y);
+    paintCover(x,c);
+    c.cv=cv; c.off=c.r+pad; c.side=side;
+  });
+  makeGround(W,H);
+  makeMotes(W,H);
+}
+
+/* Faint scatter of grit and stones. Kept very dark on purpose: a cat's eye reads
+   brightness contrast, so busy terrain would cost the quarry its salience. */
+function makeGround(W,H){
+  const dpr=DPR(), bd=BACKDROPS[backdrop];
+  groundCv=document.createElement("canvas");
+  groundCv.width=Math.round(W*dpr); groundCv.height=Math.round(H*dpr);
+  const x=groundCv.getContext("2d"); x.setTransform(dpr,0,0,dpr,0,0);
+  for(let i=0;i<170;i++){
+    x.fillStyle="rgba("+bd.grit+","+(.025+Math.random()*.05).toFixed(3)+")";
+    const r=rand(.8,2.4);
+    x.beginPath(); x.arc(rand(0,W),rand(0,H),r,0,7); x.fill();
+  }
+  for(let i=0;i<11;i++){
+    const r=rand(7,20), px=rand(r,W-r), py=rand(r,H-r);
+    x.fillStyle="rgba("+bd.blobA+",.07)";
+    x.beginPath(); x.ellipse(px,py,r,r*rand(.5,.8),rand(0,3),0,7); x.fill();
+    x.fillStyle="rgba("+bd.blobB+",.05)";
+    x.beginPath(); x.ellipse(px-r*.2,py-r*.22,r*.5,r*.3,rand(0,3),0,7); x.fill();
+  }
+}
+
+/* Drifting debris. A den's leaves stay put until a paw disturbs them, the way
+   this always worked — every other backdrop keeps its debris moving on its
+   own the whole time, since bubbles rise, embers drift and petals never
+   quite settle. A paw landing nearby still scatters any of them further. */
+function makeMotes(W,H){
+  motes=[];
+  const bd=BACKDROPS[backdrop];
+  const n=Math.round(Math.min(26,Math.max(9,W*H/bd.moteDensity)));
+  for(let i=0;i<n;i++){
+    motes.push({
+      x:rand(20,W-20), y:rand(20,H-20), a:rand(0,6.2832),
+      s:Math.min(W,H)*rand(.018,.040), vx:0, vy:0, va:0,
+      c:bd.moteColors[(Math.random()*bd.moteColors.length)|0],
+      kind:bd.moteKind,
+      drift:rand(10,34), sway:rand(6,18), swayF:rand(.0012,.0032), spin:rand(-2.2,2.2),
+      seed:rand(0,6.2832)
+    });
+  }
+}
+function stepMotes(dt,W,H,t){
+  const damp=Math.exp(-4.2*dt);
+  for(const m of motes){
+    if(Math.abs(m.vx)>=1 || Math.abs(m.vy)>=1 || Math.abs(m.va)>=.05){
+      m.x+=m.vx*dt; m.y+=m.vy*dt; m.a+=m.va*dt;
+      m.vx*=damp; m.vy*=damp; m.va*=damp;
+    }else{ m.vx=m.vy=m.va=0; }
+
+    if(m.kind==="bubble"){
+      m.y-=m.drift*dt;
+      m.x+=Math.sin(t*m.swayF+m.seed)*m.sway*dt;
+      if(m.y<-20){ m.y=H+20; m.x=rand(20,W-20); }
+    }else if(m.kind==="ember"){
+      m.y-=m.drift*.5*dt;
+      m.x+=Math.sin(t*m.swayF*.6+m.seed)*m.sway*.5*dt;
+      m.a+=m.spin*dt;
+      if(m.y<-20){ m.y=H+20; m.x=rand(20,W-20); }
+    }else if(m.kind==="petal"){
+      m.y+=m.drift*.4*dt;
+      m.x+=Math.sin(t*m.swayF*.5+m.seed)*m.sway*dt;
+      m.a+=m.spin*.3*dt;
+      if(m.y>H+20){ m.y=-20; m.x=rand(20,W-20); }
+    }else{
+      if(m.x<8||m.x>W-8){ m.vx*=-.45; m.x=Math.max(8,Math.min(W-8,m.x)); }
+      if(m.y<8||m.y>H-8){ m.vy*=-.45; m.y=Math.max(8,Math.min(H-8,m.y)); }
+    }
+  }
+}
+function drawMotes(ctx){
+  for(const m of motes){
+    ctx.save(); ctx.translate(m.x,m.y); ctx.rotate(m.a);
+    if(m.kind==="bubble"){
+      ctx.globalAlpha=.5; ctx.strokeStyle=m.c; ctx.lineWidth=Math.max(.8,m.s*.16);
+      ctx.beginPath(); ctx.arc(0,0,m.s*.6,0,6.2832); ctx.stroke();
+      ctx.globalAlpha=.7; ctx.fillStyle=m.c;
+      ctx.beginPath(); ctx.arc(-m.s*.18,-m.s*.2,m.s*.14,0,6.2832); ctx.fill();
+    }else if(m.kind==="ember"){
+      ctx.globalAlpha=.55+Math.sin(m.seed+m.a*2)*.2;
+      ctx.fillStyle=m.c; ctx.shadowColor=m.c; ctx.shadowBlur=m.s*1.4;
+      ctx.beginPath(); ctx.ellipse(0,0,m.s*.55,m.s*.14,0,0,6.2832); ctx.fill();
+      ctx.shadowBlur=0;
+    }else if(m.kind==="petal"){
+      ctx.globalAlpha=.55; ctx.fillStyle=m.c;
+      ctx.beginPath(); ctx.ellipse(0,0,m.s*.5,m.s*.28,0,0,6.2832); ctx.fill();
+    }else{
+      ctx.fillStyle=m.c;
+      ctx.beginPath();
+      ctx.moveTo(0,-m.s);
+      ctx.quadraticCurveTo(m.s*.62,-m.s*.1, 0,m.s);
+      ctx.quadraticCurveTo(-m.s*.62,-m.s*.1, 0,-m.s);
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle="rgba(0,0,0,.35)"; ctx.lineWidth=Math.max(.7,m.s*.07);
+      ctx.beginPath(); ctx.moveTo(0,-m.s*.85); ctx.lineTo(0,m.s*.85); ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+    ctx.restore();
+  }
+}
+
+/* A paw landing anywhere disturbs the ground: leaves tumble, tufts shake,
+   grit kicks up. The floor answers back even on a miss. */
+function disturb(px,py){
+  const R=Math.min(W,H)*.20;
+  for(const m of motes){
+    const dx=m.x-px, dy=m.y-py, d=Math.hypot(dx,dy);
+    if(d<R){
+      const f=(1-d/R), a=Math.atan2(dy,dx)+rand(-.5,.5), sp=f*rand(180,430);
+      m.vx+=Math.cos(a)*sp; m.vy+=Math.sin(a)*sp; m.va+=rand(-9,9)*f;
+    }
+  }
+  for(const c of covers){
+    if(Math.hypot(c.x-px,c.y-py)<c.r*1.6) c.shake=1;
+  }
+  for(let i=0;i<7;i++){
+    const a=rand(0,6.2832), sp=rand(30,150);
+    bursts.push({x:px,y:py,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:.7,c:"#5e7358",dust:1});
+  }
+  bursts.push({ring:true,x:px,y:py,r:8,life:.6,c:"#4e6350"});
+}
+function paintCover(x,c){
+  let s=c.seed;
+  const rr=()=>{ s=(s*9301+49297)%233280; return s/233280; };
+  const tuft=BACKDROPS[backdrop].tuft;
+  x.lineCap="round";
+  for(let i=0;i<52;i++){
+    const a=rr()*6.2832, d=Math.sqrt(rr())*c.r*.85;
+    const bx=c.x+Math.cos(a)*d, by=c.y+Math.sin(a)*d*.5;
+    const ht=c.r*(.45+rr()*.8), lean=(rr()-.5)*c.r*.55;
+    x.strokeStyle = rr()>.65 ? tuft[0] : tuft[1];
+    x.lineWidth=c.r*.05+rr()*c.r*.03;
+    x.beginPath(); x.moveTo(bx,by);
+    x.quadraticCurveTo(bx+lean*.45,by-ht*.62,bx+lean,by-ht);
+    x.stroke();
+  }
+}
+
+/* ================= prey ================= */
+
+function Prey(kind,W,H){
+  this.set(kind,W,H);
+}
+Prey.prototype.set=function(kind,W,H){
+  this.k=kind; this.s=SPECIES[kind];
+  this.W=W; this.H=H;
+  this.scale=Math.min(1.7,Math.max(.85,Math.min(W,H)/620));
+  this.size=this.s.size*this.scale*1.95;
+  this.x=W*rand(.25,.75); this.y=H*rand(.25,.75);
+  this.head=rand(0,6.28); this.vx=0; this.vy=0;
+  this.state="pause"; this.t=rand(.3,.9); this.ph=0;
+  this.fatigue=0; this.alive=true; this.respawn=0;
+  this.hide=null; this.target=null; this.wind=1; this.attract=false; this.coverCool=6;
+  this.trail=[]; this.hopT=0; this.hopDur=1; this.sprint=1; this.zig=0;
+  // Cats habituate fast to a rhythm they've learned. Every session (and every
+  // swap) rolls a fresh temperament, so the same quarry never plays identically.
+  this.jit={ speed:rand(.80,1.24), pause:rand(.72,1.34), dart:rand(.78,1.28), turn:rand(.75,1.35) };
+};
+Prey.prototype.margin=function(){ return this.size*.85; };
+Prey.prototype.speedNow=function(){
+  const base=this.s.speed*(this.W/1000)*Math.max(.75,this.scale*.8);
+  return base*this.jit.speed*(1-Math.min(this.fatigue*.055,.45))*this.wind*(this.attract?.6:1);
+};
+Prey.prototype.step=function(dt,paws){
+  const s=this.s, m=this.margin();
+  this.fatigue=Math.max(0,this.fatigue-dt*.22);   // recovers if the cat gives up the chase
+  this.coverCool-=dt;
+
+  if(!this.alive){
+    this.respawn-=dt;
+    if(this.respawn<=0){
+      this.alive=true;
+      // re-enter from a random edge
+      const e=Math.floor(rand(0,4));
+      if(e===0){this.x=m; this.y=rand(m,this.H-m); this.head=0;}
+      else if(e===1){this.x=this.W-m; this.y=rand(m,this.H-m); this.head=Math.PI;}
+      else if(e===2){this.x=rand(m,this.W-m); this.y=m; this.head=Math.PI/2;}
+      else {this.x=rand(m,this.W-m); this.y=this.H-m; this.head=-Math.PI/2;}
+      this.state="dart"; this.t=rand(.4,.8); this.vx=this.vy=0; this.trail.length=0;
+    }
+    return;
+  }
+
+  // holed up in cover: still, silent, catchable by pouncing the tuft
+  if(this.state==="hidden"){
+    this.vx=this.vy=0; this.t-=dt; this.ph+=dt*3;
+    let flush=null;
+    for(const p of paws){ if(Math.hypot(p.x-this.x,p.y-this.y)<this.hide.r*1.7) flush=p; }
+    if(flush||this.t<=0){
+      this.head = flush ? Math.atan2(this.y-flush.y,this.x-flush.x)+rand(-.4,.4) : rand(0,6.2832);
+      this.state="flee"; this.t=rand(.5,.9); this.hide=null; this.coverCool=rand(5,9);
+      const sp=this.speedNow()*1.5;
+      this.vx=Math.cos(this.head)*sp; this.vy=Math.sin(this.head)*sp;
+    }
+    return;
+  }
+
+  // running for cover
+  if(this.state==="tocover"){
+    const c=this.target;
+    if(!c){ this.state="pause"; this.t=rand(.3,.7); }
+    else{
+      this.head=Math.atan2(c.y-this.y,c.x-this.x);
+      if(Math.hypot(c.x-this.x,c.y-this.y)<c.r*.45){
+        this.state="hidden"; this.hide=c; this.x=c.x; this.y=c.y;
+        this.t=rand(.6,1.7)*(this.attract?1.35:1); this.vx=this.vy=0;
+        return;
+      }
+      this.t-=dt;
+      if(this.t<=0){ this.state="pause"; this.t=rand(.3,.7); }
+    }
+  }
+
+  // flee if a paw is close
+  let nearest=null, nd=1e9;
+  for(const p of paws){
+    const d=Math.hypot(p.x-this.x,p.y-this.y);
+    if(d<nd){nd=d;nearest=p;}
+  }
+  const fleeR=this.size*3.1;
+  if(nearest && nd<fleeR && this.state!=="flee"){
+    this.state="flee"; this.t=rand(.35,.7);
+    this.head=Math.atan2(this.y-nearest.y,this.x-nearest.x)+rand(-.5,.5);
+  }
+
+  if(this.state!=="tocover"){
+    this.t-=dt;
+    if(this.t<=0){
+      if(this.state==="dart"||this.state==="flee"){
+        this.state="pause"; this.t=rand(s.pause[0],s.pause[1])*this.jit.pause*.85;
+        if(Math.random()<.07) this.t*=rand(1.7,2.6);    // occasional long dead stop
+        if(this.fatigue>4) this.t*=1.35;         // tiring prey lingers — a chance to catch it
+        if(this.attract) this.t*=1.2;            // bored cat: hold the freeze, let it twitch
+        this.sprint=1; this.zig=0;
+      }else{
+        // Weighted repertoire rather than one move on repeat. The point is that
+        // a cat can't learn the pattern, because there isn't one.
+        const turn=s.turnBias*this.jit.turn;
+        let c=null;
+        if(covers.length && this.coverCool<=0 && Math.random()<.15){
+          const pick=covers[(Math.random()*covers.length)|0];
+          if(Math.hypot(pick.x-this.x,pick.y-this.y)>this.size*2) c=pick;
+        }
+        this.sprint=1; this.zig=0;
+        if(c){ this.state="tocover"; this.target=c; this.t=rand(1.4,2.8); }
+        else{
+          const roll=Math.random();
+          this.state="dart";
+          if(roll<.10){                                  // false start: a flinch
+            this.t=rand(.05,.12); this.head+=rand(-1.1,1.1);
+          }else if(roll<.20){                            // panic sprint
+            this.t=rand(.9,1.7)*this.jit.dart; this.sprint=rand(1.5,1.95); this.head+=rand(-.6,.6);
+          }else if(roll<.31){                            // doubles back on itself
+            this.t=rand(.22,.5)*this.jit.dart; this.head+=Math.PI+rand(-.6,.6);
+          }else if(roll<.44){                            // zigzag run
+            this.t=rand(.4,.85)*this.jit.dart; this.zig=rand(8,17); this.head+=rand(-turn,turn);
+          }else{                                         // ordinary dart
+            this.t=rand(s.dart[0],s.dart[1])*this.jit.dart; this.head+=rand(-turn,turn);
+          }
+          this.hopT=0; this.hopDur=this.t;
+        }
+      }
+    }
+  }
+
+  // heading drift
+  if(s.continuous) this.head+=Math.sin(this.ph*2.3+this.x*.01)*s.turnBias*dt*.55;
+  if(this.zig) this.head+=Math.sin(this.ph*this.zig)*this.zig*dt*.42;
+  if(s.vertical && this.state==="dart") this.head+=Math.sin(this.ph*9)*.05;
+
+  // mice hug the walls
+  if(s.edgeHug>0 && this.state==="dart"){
+    const dl=this.x, dr=this.W-this.x, dtp=this.y, db=this.H-this.y;
+    const mn=Math.min(dl,dr,dtp,db);
+    if(mn>Math.min(this.W,this.H)*.2){
+      let tgt;
+      if(mn===dl||mn===dr) tgt=(mn===dl)?Math.PI:0;
+      else tgt=(mn===dtp)?-Math.PI/2:Math.PI/2;
+      let d=((tgt-this.head+Math.PI*3)%(Math.PI*2))-Math.PI;
+      this.head+=d*s.edgeHug*dt*1.1;
+    }
+  }
+
+  // velocity
+  const moving=(this.state==="dart"||this.state==="flee"||this.state==="tocover");
+  const target=moving? this.speedNow()*this.sprint*(this.state==="flee"?1.55:(this.state==="tocover"?1.25:1)) : (s.continuous? this.speedNow()*.22 : 0);
+  const tx=Math.cos(this.head)*target, ty=Math.sin(this.head)*target;
+  const a=1-Math.exp(-s.accel*dt);
+  this.vx+=(tx-this.vx)*a; this.vy+=(ty-this.vy)*a;
+  this.x+=this.vx*dt; this.y+=this.vy*dt;
+
+  // walls
+  if(this.x<m){this.x=m; this.head=Math.PI-this.head+rand(-.3,.3); this.vx=Math.abs(this.vx);}
+  if(this.x>this.W-m){this.x=this.W-m; this.head=Math.PI-this.head+rand(-.3,.3); this.vx=-Math.abs(this.vx);}
+  if(this.y<m){this.y=m; this.head=-this.head+rand(-.3,.3); this.vy=Math.abs(this.vy);}
+  if(this.y>this.H-m){this.y=this.H-m; this.head=-this.head+rand(-.3,.3); this.vy=-Math.abs(this.vy);}
+
+  if(this.s.hop && this.state==="dart") this.hopT+=dt;
+
+  if(this.s.trail || this.k==="snake"){
+    const head=this.trail[0];
+    if(!head || Math.hypot(head.x-this.x,head.y-this.y)>this.size*0.08){
+      this.trail.unshift({x:this.x,y:this.y});
+      const maxLen = (this.k==="snake") ? 28 : 30;
+      if(this.trail.length>maxLen) this.trail.pop();
+    }
+  }
+
+  this.ph+=dt*(moving?1.6:.5);
+};
+Prey.prototype.catchR=function(){
+  if(this.state==="hidden" && this.hide) return this.hide.r*1.05;   // pounce the tuft
+  return this.size*(1.15+Math.min(this.fatigue*.09,.85))*(1+(1-this.wind)*1.1);
+};
+Prey.prototype.draw=function(ctx){
+  if(!this.alive) return;
+  if(this.state==="hidden"){
+    // just enough movement at the base of the tuft to hold a cat's stare
+    const j=Math.sin(this.ph*9)*this.hide.r*.10;
+    ctx.save(); ctx.globalAlpha=.75;
+    ctx.strokeStyle=this.s.color; ctx.lineCap="round";
+    ctx.lineWidth=this.size*.11; ctx.shadowColor=this.s.color; ctx.shadowBlur=10;
+    ctx.beginPath();
+    ctx.moveTo(this.x-this.hide.r*.16, this.y+this.hide.r*.20);
+    ctx.quadraticCurveTo(this.x+j, this.y+this.hide.r*.05, this.x+this.hide.r*.20+j, this.y+this.hide.r*.18);
+    ctx.stroke(); ctx.restore();
+    return;
+  }
+  if(this.k==="snake" && this.trail.length>2){ drawSnakeTrail(ctx,this); return; }
+  if(this.s.trail && this.trail.length>4){ drawWormTrail(ctx,this); return; }
+
+  const moving=Math.hypot(this.vx,this.vy)>30;
+  let ox=0,oy=0;
+  if(this.state==="pause"){
+    const burst=Math.max(0,Math.sin(this.ph*1.9));
+    const amp=this.size*(this.attract?.10:.035)*burst;
+    ox=Math.sin(this.ph*40)*amp; oy=Math.cos(this.ph*31)*amp*.6;
+  }
+  if(this.s.bob) oy+=Math.sin(this.ph*5.5)*this.size*.09;   // dragonflies never sit quite still
+
+  // crickets leave the floor: arc up, cast a shrinking shadow, land hard
+  let hop=0;
+  if(this.s.hop && this.state==="dart" && this.hopDur>0)
+    hop=Math.sin(Math.PI*Math.min(1,this.hopT/this.hopDur));
+  if(hop>.01){
+    ctx.save(); ctx.globalAlpha=.20*(1-hop*.55); ctx.fillStyle=this.s.color;
+    ctx.beginPath();
+    ctx.ellipse(this.x+ox,this.y+oy+this.size*.30,this.size*.34*(1-hop*.35),this.size*.12*(1-hop*.35),0,0,7);
+    ctx.fill(); ctx.restore();
+  }
+
+  ctx.save();
+  ctx.translate(this.x+ox,this.y+oy-this.size*.52*hop);
+  ctx.rotate(this.head+Math.PI/2);
+  if(hop>0) ctx.scale(1+hop*.26,1+hop*.26);
+  DRAW[this.k](ctx,this.size,this.s.color,this.ph,moving);
+  ctx.restore();
+};
+
+/* ================= audio ================= */
+let AC=null, sndOn=true;
+function ac(){ if(!AC) AC=new (window.AudioContext||window.webkitAudioContext)(); return AC; }
+/* Frequency sweeps calibrated for feline hearing (3–8 kHz) */
+function chirp(hi,lo,vol,dur){
+  if(!sndOn) return;
+  try{
+    const c=ac(), t=c.currentTime;
+    const o=c.createOscillator(), g=c.createGain();
+    o.type="triangle";
+    o.frequency.setValueAtTime(hi,t);
+    o.frequency.exponentialRampToValueAtTime(lo,t+dur*.72);
+    g.gain.setValueAtTime(.0001,t);
+    g.gain.exponentialRampToValueAtTime(vol,t+.008);
+    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    o.connect(g); g.connect(c.destination);
+    o.start(t); o.stop(t+dur+.02);
+  }catch(e){}
+}
+const squeak = ()=>chirp(5400,2200,.18,.11);   // caught it
+function curiosityChirp(){
+  if(!sndOn) return;
+  try{
+    chirp(5800, 4400, .14, .08);
+    setTimeout(()=>chirp(6400, 4800, .12, .09), 120);
+  }catch(e){}
+}
+function scamperSound(){
+  if(!sndOn) return;
+  try{
+    chirp(3800, 4600, .06, .03);
+  }catch(e){}
+}
+
+/* ================= home preview ================= */
+const pv=document.getElementById("preview"), pvx=pv.getContext("2d");
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+let pvPrey=null, pvW=0, pvH=0, pvLast=0;
+
+function sizePreview(){
+  const r=pv.getBoundingClientRect(), dpr=Math.min(2,devicePixelRatio||1);
+  pv.width=Math.round(r.width*dpr); pv.height=Math.round(r.height*dpr);
+  pvx.setTransform(dpr,0,0,dpr,0,0);
+  pvW=r.width; pvH=r.height;
+  if(pvPrey){ pvPrey.W=pvW; pvPrey.H=pvH; pvPrey.x=Math.min(pvPrey.x,pvW-20); pvPrey.y=Math.min(pvPrey.y,pvH-20); }
+}
+function pvLoop(ts){
+  const dt=Math.min(.05,(ts-pvLast)/1000||.016); pvLast=ts;
+  pvx.clearRect(0,0,pvW,pvH);
+  if(pvPrey){ if(!reduce) pvPrey.step(dt,[]); pvPrey.draw(pvx); }
+  requestAnimationFrame(pvLoop);
+}
+
+/* ================= record ================= */
+/* Persisted if the browser allows it, held in memory if not. Nothing leaves
+   the device — export writes a file straight from the page. */
+const KEY="quarry.log.v1";
+const store=(()=>{
+  try{
+    const t="__q"; localStorage.setItem(t,"1"); localStorage.removeItem(t);
+    return {get:()=>localStorage.getItem(KEY), set:v=>localStorage.setItem(KEY,v), persists:true};
+  }catch(e){
+    let mem=null;
+    return {get:()=>mem, set:v=>{mem=v;}, persists:false};
+  }
+})();
+let LOG=[];
+function loadLog(){
+  try{ LOG=JSON.parse(store.get()||"[]"); }catch(e){ LOG=[]; }
+  if(!Array.isArray(LOG)) LOG=[];
+}
+function saveLog(){ try{ store.set(JSON.stringify(LOG.slice(-800))); }catch(e){} }
+loadLog();
+
+function download(name,text,mime){
+  const url=URL.createObjectURL(new Blob([text],{type:mime}));
+  const a=document.createElement("a");
+  a.href=url; a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url); a.remove();},500);
+}
+const csvCell=v=>{
+  const s=String(v??"");
+  return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
+};
+function toCSV(){
+  const head=["started","quarry","minutes","catches","pounces","accuracy",
+              "catches_per_min","engaged_minutes","longest_pause_s","session_length_min",
+              "best_streak","avg_pursuit_s","backdrop","filter"];
+  const rows=LOG.map(r=>[
+    r.t, SPECIES[r.k]?SPECIES[r.k].label:r.k, r.m.toFixed(2), r.c, r.p,
+    r.p? (r.c/r.p).toFixed(3) : "",
+    r.m>0? (r.c/r.m).toFixed(2) : "",
+    (r.e||0).toFixed(2), Math.round(r.mi||0), r.len,
+    r.str||0, r.pur??"", BACKDROPS[r.bd]?BACKDROPS[r.bd].label:(r.bd||""), r.f||""
+  ]);
+  return [head, ...rows].map(r=>r.map(csvCell).join(",")).join("\n");
+}
+
+function computeLifetimeStats(){
+  let catches=0, taps=0, minutes=0, bestSession=0, bestRate=0, bestStreak=0;
+  const bySpecies={}, byBackdrop={}, days=new Set();
+  LOG.forEach(r=>{
+    catches+=r.c; taps+=r.p||0; minutes+=r.m;
+    if(r.c>bestSession) bestSession=r.c;
+    const rate=r.m>0? r.c/r.m : 0; if(rate>bestRate) bestRate=rate;
+    if((r.str||0)>bestStreak) bestStreak=r.str||0;
+    const sp=bySpecies[r.k]||(bySpecies[r.k]={c:0}); sp.c+=r.c;
+    const bd=r.bd||"den"; const be=byBackdrop[bd]||(byBackdrop[bd]={m:0}); be.m+=r.m;
+    days.add(new Date(r.t).toDateString());
+  });
+  const dayList=[...days].map(d=>{ const x=new Date(d); x.setHours(0,0,0,0); return x; }).sort((a,b)=>b-a);
+  let streak=0;
+  if(dayList.length){
+    const today=new Date(); today.setHours(0,0,0,0);
+    const gap=Math.round((today-dayList[0])/86400000);
+    if(gap<=1){
+      streak=1;
+      for(let i=1;i<dayList.length;i++){
+        if(Math.round((dayList[i-1]-dayList[i])/86400000)===1) streak++; else break;
+      }
+    }
+  }
+  const favSpecies=Object.keys(bySpecies).sort((a,b)=>bySpecies[b].c-bySpecies[a].c)[0];
+  const favBackdrop=Object.keys(byBackdrop).sort((a,b)=>byBackdrop[b].m-byBackdrop[a].m)[0];
+  return {
+    sessions:LOG.length, catches, taps, minutes, bestSession, bestRate, bestStreak, streak,
+    hitRate: taps? catches/taps : 0,
+    favSpecies: (favSpecies&&SPECIES[favSpecies]) ? SPECIES[favSpecies].label : "—",
+    favBackdrop: (favBackdrop&&BACKDROPS[favBackdrop]) ? BACKDROPS[favBackdrop].label : "—"
+  };
+}
+const stamp=()=>new Date().toISOString().slice(0,10);
+
+function renderRecord(){
+  const wrap=document.getElementById("recWrap"), el=document.getElementById("rec");
+  if(!LOG.length){ wrap.hidden=true; return; }
+  wrap.hidden=false;
+
+  const by={};
+  LOG.forEach(r=>{
+    const b=by[r.k]||(by[r.k]={m:0,c:0,p:0,n:0});
+    b.m+=r.m; b.c+=r.c; b.p+=r.p||0; b.n++;
+  });
+  const rate=k=>by[k].c/Math.max(by[k].m,.75);
+  const mins=v=>v<1?v.toFixed(1):Math.round(v);
+  const keys=Object.keys(by).filter(k=>SPECIES[k]).sort((a,b)=>rate(b)-rate(a));
+
+  const K=computeLifetimeStats();
+  let html='<div class="kpis">'+
+    '<div class="kpi"><b>'+K.catches+'</b><span>lifetime catches</span></div>'+
+    '<div class="kpi"><b>'+K.sessions+'</b><span>sessions</span></div>'+
+    '<div class="kpi"><b>'+Math.round(K.hitRate*100)+'%</b><span>hit rate</span></div>'+
+    '<div class="kpi"><b>'+K.bestSession+'</b><span>best session</span></div>'+
+    '<div class="kpi"><b>'+K.bestStreak+'</b><span>best streak</span></div>'+
+    '<div class="kpi"><b>'+K.streak+'</b><span>day streak</span></div>'+
+    '</div>'+
+    '<p class="rec-fav">Favourite quarry: <b style="color:var(--bone);font-weight:500">'+K.favSpecies+
+    '</b> · Favourite backdrop: <b style="color:var(--bone);font-weight:500">'+K.favBackdrop+'</b></p>';
+
+  html+='<table><thead><tr><th>Quarry</th><th>Runs</th><th>Min</th><th>Catches</th><th>Rate</th><th>Hit</th></tr></thead><tbody>';
+  keys.forEach(k=>{
+    const b=by[k];
+    html+='<tr><td>'+SPECIES[k].label+'</td><td>'+b.n+'</td><td>'+mins(b.m)+
+          '</td><td><b>'+b.c+'</b></td><td>'+rate(k).toFixed(1)+'</td><td>'+
+          (b.p? Math.round(100*b.c/b.p)+"%" : "—")+'</td></tr>';
+  });
+  html+='</tbody></table>';
+
+  const recent=LOG.slice(-6).reverse();
+  html+='<h4>Recent</h4><table><tbody>';
+  recent.forEach(r=>{
+    const d=new Date(r.t);
+    html+='<tr><td>'+(SPECIES[r.k]?SPECIES[r.k].label:r.k)+'</td><td>'+
+      d.toLocaleDateString(undefined,{day:"numeric",month:"short"})+" "+
+      d.toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"})+
+      '</td><td>'+mins(r.m)+' min</td><td><b>'+r.c+'</b></td></tr>';
+  });
+  html+='</tbody></table>';
+
+  html+='<div class="exp">'+
+    '<button id="expCsv">Export CSV</button>'+
+    '<button id="expJson">Export JSON</button>'+
+    '<button id="clearLog" class="danger">Clear</button></div>';
+
+  html+='<p>Ranked by catches per minute. Hit rate is catches divided by taps, so it drops if your cat swats wildly and climbs as they learn to time a pounce — watch it over weeks rather than sessions.'+
+    (store.persists ? ' Stored on this device only.'
+      : ' <b style="color:var(--wheat);font-weight:500">This browser is blocking storage, so the record will vanish when you close the page.</b> Download the file and open it directly to keep history between days.')+
+    '</p>';
+
+  el.innerHTML=html;
+  document.getElementById("expCsv").addEventListener("click",()=>
+    download("cat-app-"+stamp()+".csv", toCSV(), "text/csv"));
+  document.getElementById("expJson").addEventListener("click",()=>
+    download("cat-app-"+stamp()+".json", JSON.stringify(LOG,null,2), "application/json"));
+  document.getElementById("clearLog").addEventListener("click",e=>{
+    const b=e.target;
+    if(b.dataset.armed){ LOG=[]; saveLog(); renderRecord(); }
+    else{ b.dataset.armed="1"; b.textContent="Tap again to erase"; setTimeout(()=>{
+      if(b.isConnected){ delete b.dataset.armed; b.textContent="Clear"; } },4000); }
+  });
+}
+
+/* ================= state ================= */
+let kind="beetle", minutes=10;
+
+const chipsEl=document.getElementById("specimens");
+function paintSpecimenChips(){
+  [...chipsEl.children].forEach(b=>{
+    const k=b.dataset.k, cv=b.querySelector("canvas"), r=cv.getBoundingClientRect();
+    if(!r.width) return;
+    const dpr=Math.min(2,devicePixelRatio||1);
+    cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr);
+    const x=cv.getContext("2d"); x.setTransform(dpr,0,0,dpr,0,0);
+    x.translate(r.width/2,r.height/2);
+    const sz=Math.min(32,r.height*.72);
+    DRAW[k](x,sz,SPECIES[k].color,.35,false);
+  });
+}
+
+ORDER.forEach(k=>{
+  const b=document.createElement("button");
+  b.className="chip"; b.setAttribute("role","radio"); b.dataset.k=k;
+  b.innerHTML='<canvas></canvas><span>'+SPECIES[k].label+'</span>';
+  chipsEl.appendChild(b);
+  b.addEventListener("click",()=>selectKind(k));
+});
+requestAnimationFrame(paintSpecimenChips);
+
+function selectKind(k){
+  kind=k;
+  [...chipsEl.children].forEach(c=>c.setAttribute("aria-checked",String(c.dataset.k===k)));
+  document.getElementById("specimenNote").textContent=SPECIES[k].note;
+  document.getElementById("previewNote").textContent=SPECIES[k].label+", moving as it will in play";
+  if(!pvPrey) pvPrey=new Prey(k,pvW,pvH); else pvPrey.set(k,pvW,pvH);
+}
+
+document.getElementById("lenSeg").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  minutes=+b.dataset.min;
+  [...e.currentTarget.children].forEach(c=>c.setAttribute("aria-pressed",String(c===b)));
+});
+function setFilter(f){
+  filterMode=f;
+  document.body.classList.remove("filt-underwater","filt-thermal","filt-dream");
+  if(f!=="none") document.body.classList.add("filt-"+f);
+}
+function setBackdrop(k){
+  backdrop=k;
+  fieldEl.style.background=BACKDROPS[k].field;
+  if(running && W && H) makeCovers(W,H);   // live re-skin mid-session
+}
+function rotateBackdropFilter(){
+  const bdKeys=Object.keys(BACKDROPS);
+  let nb,nf;
+  do{
+    nb=bdKeys[(Math.random()*bdKeys.length)|0];
+    nf=FILTER_KEYS[(Math.random()*FILTER_KEYS.length)|0];
+  }while(nb===backdrop && nf===filterMode);
+  setBackdrop(nb);
+  setFilter(nf);
+  syncSegUI();
+}
+/* Every toggle exists twice — once in the setup menu, once in the in-play
+   tune drawer — so settings can change without leaving the hunt. This keeps
+   both copies of every control in sync with the live state. */
+function syncSegUI(){
+  document.querySelectorAll('#bgSeg button, #optsBg button').forEach(c=>c.setAttribute("aria-pressed",String(c.dataset.bg===backdrop)));
+  document.querySelectorAll('#filtSeg button, #optsFilt button').forEach(c=>c.setAttribute("aria-pressed",String(c.dataset.f===filterMode)));
+  document.querySelectorAll('#sndSeg button, #optsSnd button').forEach(c=>c.setAttribute("aria-pressed",String((c.dataset.snd==="1")===sndOn)));
+  document.querySelectorAll('#frenzySeg button, #optsFrenzy button').forEach(c=>c.setAttribute("aria-pressed",String((c.dataset.fz==="1")===frenzy)));
+  document.querySelectorAll('#shufSeg button, #optsShuf button').forEach(c=>c.setAttribute("aria-pressed",String((c.dataset.s==="1")===shuffle)));
+  document.querySelectorAll('#arotSeg button, #optsArot button').forEach(c=>c.setAttribute("aria-pressed",String((c.dataset.ar==="1")===autoRotate)));
+}
+function wireSeg(id,onPick){
+  const el=document.getElementById(id); if(!el) return;
+  el.addEventListener("click",e=>{
+    const b=e.target.closest("button"); if(!b) return;
+    onPick(b.dataset);
+    syncSegUI();
+  });
+}
+wireSeg("shufSeg", d=>{ shuffle=d.s==="1"; });
+wireSeg("optsShuf", d=>{ shuffle=d.s==="1"; });
+wireSeg("sndSeg", d=>{ sndOn=d.snd==="1"; });
+wireSeg("optsSnd", d=>{ sndOn=d.snd==="1"; });
+wireSeg("frenzySeg", d=>{ frenzy=d.fz==="1"; });
+wireSeg("optsFrenzy", d=>{ frenzy=d.fz==="1"; });
+wireSeg("bgSeg", d=>setBackdrop(d.bg));
+wireSeg("optsBg", d=>setBackdrop(d.bg));
+wireSeg("filtSeg", d=>setFilter(d.f));
+wireSeg("optsFilt", d=>setFilter(d.f));
+wireSeg("arotSeg", d=>{ autoRotate=d.ar==="1"; if(autoRotate) rotateAt=left-rand(40,90); });
+wireSeg("optsArot", d=>{ autoRotate=d.ar==="1"; if(autoRotate) rotateAt=left-rand(40,90); });
+
+/* ================= game ================= */
+const fieldEl=document.getElementById("field"), fx=fieldEl.getContext("2d");
+const hud=document.getElementById("hud"), hudCatch=document.getElementById("hudCatch"), hudTime=document.getElementById("hudTime");
+let W=0,H=0,prey=null,paws=new Map(),bursts=[],catches=0,left=0,running=false,last=0,raf=0,wake=null,hudTimer=0;
+let idle=0, total=0, sessionLog=[];
+let shuffle=false, shuffleAt=0;
+let autoRotate=true, rotateAt=0;
+let frenzy=true, decoys=[], wandTeaser=null, lastChirpAt=0, lastTeaserAt=0;
+let segKind='beetle', segCatches=0, segStartLeft=0, segTaps=0, segMaxIdle=0, segEngaged=0;
+let segStreak=0, segBestStreak=0, segLastCatchAt=null, segPursuitSum=0, segPursuitN=0;
+let sessionRecords=[];
+
+function sizeField(){
+  const dpr=Math.min(2,devicePixelRatio||1);
+  W=fieldEl.clientWidth; H=fieldEl.clientHeight;
+  fieldEl.width=Math.round(W*dpr); fieldEl.height=Math.round(H*dpr);
+  fx.setTransform(dpr,0,0,dpr,0,0);
+  if(prey){prey.W=W;prey.H=H;}
+}
+
+function show(id){
+  document.body.classList.toggle("in-play",id==="play");
+  ["home","play","done"].forEach(s=>document.getElementById(s).classList.toggle("on",s===id));
+  if(id==="home"||id==="done") window.scrollTo(0,0);
+}
+
+function fmt(s){
+  s=Math.max(0,Math.ceil(s));
+  return Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
+}
+
+function startGame(){
+  try{ ac().resume(); }catch(e){}
+  show("play");
+  try{ if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function(){}); }catch(e){}
+  try{ if(navigator.wakeLock) navigator.wakeLock.request("screen").then(function(w){ wake=w; }).catch(function(){}); }catch(e){}
+  requestAnimationFrame(()=>{
+    sizeField();
+    makeCovers(W,H);
+    prey=new Prey(kind,W,H);
+    catches=0; bursts=[]; paws.clear(); left=minutes*60; total=left; idle=0; running=true;
+    segKind=kind; resetSeg(); sessionRecords=[]; markSwapChips(); closeSwap(); closeOpts(); syncSegUI();
+    wandTeaser=null; decoys=[]; lastChirpAt=left; lastTeaserAt=left;
+    shuffleAt=left-rand(50,110);
+    rotateAt=left-rand(40,90);
+    hudCatch.textContent="0"; hudTime.textContent=fmt(left);
+    hud.classList.remove("dim"); hudTimer=4;
+    last=performance.now();
+    cancelAnimationFrame(raf); raf=requestAnimationFrame(loop);
+  });
+}
+
+function endGame(){
+  running=false; cancelAnimationFrame(raf);
+  const priorBest=LOG.reduce((m,r)=>Math.max(m,r.c),0);
+  closeSegment();
+  closeSwap();
+  closeOpts();
+  renderRecord();
+  try{ if(wake){wake.release(); wake=null;} }catch(e){}
+  try{ if(document.fullscreenElement) document.exitFullscreen(); }catch(e){}
+  renderLog();
+  document.getElementById("tally").textContent=catches;
+  document.getElementById("tallyLabel").textContent=catches===1?"catch":"catches";
+  document.getElementById("doneCopy").textContent = catches===0
+    ? "No catches this time, which usually means the quarry was wrong rather than the cat. Try the fish or the moth, and give them a real toy either way — the hunt still wound them up."
+    : "Finish the sequence with something they can hold on to — a treat, a wand toy, a kickeroo. The catch is what closes the hunt and settles them down afterwards.";
+  renderDoneKpis(priorBest);
+  show("done");
+}
+function renderDoneKpis(priorBest){
+  const el=document.getElementById("doneKpis");
+  let c=0,p=0,m=0,str=0;
+  sessionRecords.forEach(r=>{ c+=r.c; p+=r.p; m+=r.m; if(r.str>str) str=r.str; });
+  if(!c){ el.innerHTML=""; return; }
+  const acc=p? Math.round(100*c/p):0, rate=m? (c/m).toFixed(1):"0.0";
+  let html='<div class="donekpi-row">'+
+    '<div class="kpi"><b>'+acc+'%</b><span>accuracy</span></div>'+
+    '<div class="kpi"><b>'+rate+'</b><span>per min</span></div>'+
+    '<div class="kpi"><b>'+str+'</b><span>best streak</span></div>'+
+    '</div>';
+  if(priorBest>0 && catches>priorBest) html+='<p class="pb">New personal best — beats the previous run of '+priorBest+'.</p>';
+  el.innerHTML=html;
+}
+
+function resetSeg(){
+  segCatches=0; segTaps=0; segMaxIdle=0; segEngaged=0; segStartLeft=left;
+  segStreak=0; segBestStreak=0; segLastCatchAt=null; segPursuitSum=0; segPursuitN=0;
+}
+function closeSegment(){
+  const mins=(segStartLeft-Math.max(0,left))/60;
+  if(mins<=.15) return;                       // ignore momentary swaps
+  const rec={
+    t:new Date().toISOString(), k:segKind, m:mins, c:segCatches, p:segTaps,
+    e:segEngaged/60, mi:segMaxIdle, len:minutes,
+    str:segBestStreak, pur: segPursuitN? +(segPursuitSum/segPursuitN).toFixed(2) : null,
+    bd:backdrop, f:filterMode
+  };
+  LOG.push(rec); sessionRecords.push(rec); saveLog();
+}
+
+/* ---- change quarry without leaving the session ---- */
+const swapBtn=document.getElementById("swap"), swapBar=document.getElementById("swapbar");
+let swapHold=null, swapAuto=null;
+
+ORDER.forEach(k=>{
+  const b=document.createElement("button");
+  b.className="swapchip"; b.dataset.k=k; b.setAttribute("role","radio");
+  b.innerHTML='<canvas></canvas><span>'+SPECIES[k].label+'</span>';
+  swapBar.appendChild(b);
+  b.addEventListener("click",e=>{ e.stopPropagation(); swapTo(k); });
+});
+function paintSwapChips(){
+  [...swapBar.children].forEach(b=>{
+    const cv=b.querySelector("canvas"), r=cv.getBoundingClientRect();
+    if(!r.width) return;
+    const dpr=Math.min(2,devicePixelRatio||1);
+    cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr);
+    const x=cv.getContext("2d"); x.setTransform(dpr,0,0,dpr,0,0);
+    x.translate(r.width/2,r.height/2);
+    DRAW[b.dataset.k](x,Math.min(26,r.height*.74),SPECIES[b.dataset.k].color,.35,false);
+  });
+}
+function markSwapChips(){
+  [...swapBar.children].forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.k===kind)));
+}
+function openSwap(){
+  closeOpts();
+  swapBar.classList.add("open");
+  requestAnimationFrame(paintSwapChips);
+  clearTimeout(swapAuto);
+  swapAuto=setTimeout(closeSwap,9000);   // a stray paw shouldn't leave it open
+}
+function closeSwap(){ swapBar.classList.remove("open"); clearTimeout(swapAuto); }
+
+function swapTo(k){
+  closeSwap();
+  if(!running || k===kind){ markSwapChips(); return; }
+  closeSegment();
+  if(prey && prey.alive && prey.state!=="hidden"){
+    for(let i=0;i<12;i++){
+      const a=rand(0,6.2832), sp=rand(50,220);
+      bursts.push({x:prey.x,y:prey.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:.85,c:prey.s.color});
+    }
+  }
+  selectKind(k);                       // keeps the home screen in step
+  segKind=k; resetSeg();
+  prey.set(k,W,H);
+  prey.alive=false; prey.respawn=.45;  // the new one walks in from an edge
+  idle=0;
+  markSwapChips();
+}
+
+function renderLog(){
+  const el=document.getElementById("log");
+  if(sessionRecords.length<2){ el.innerHTML=""; return; }
+  const by={};
+  sessionRecords.forEach(r=>{ const b=by[r.k]||(by[r.k]={c:0,m:0}); b.c+=r.c; b.m+=r.m; });
+  // floor the divisor so a 20-second trial can't outrank a full session
+  const rate=k=>by[k].c/Math.max(by[k].m,.75);
+  const rows=Object.keys(by).sort((a,b)=>rate(b)-rate(a));
+  el.innerHTML='<h4>Since you opened the app</h4>'+rows.map(k=>
+    '<div class="log-row"><span>'+SPECIES[k].label+'</span><b>'+by[k].c+
+    '</b><small>in '+(by[k].m<1?by[k].m.toFixed(1):Math.round(by[k].m))+' min</small></div>').join('')+
+    '<p class="log-note">This session, ranked by catches per minute. The full record is on the setup screen, with CSV and JSON export.</p>';
+}
+
+function tryCatch(x,y,countMiss){
+  let hit = false;
+  if(prey && prey.alive && Math.hypot(x-prey.x,y-prey.y)<=prey.catchR()){
+    prey.alive=false; prey.respawn=rand(.7,1.4); prey.fatigue=0;
+    catches++; segCatches++; hudCatch.textContent=catches;
+    segStreak++; if(segStreak>segBestStreak) segBestStreak=segStreak;
+    const elapsed=total-left;
+    if(segLastCatchAt!=null){ segPursuitSum+=Math.max(0,elapsed-segLastCatchAt); segPursuitN++; }
+    segLastCatchAt=elapsed;
+    squeak();
+    for(let i=0;i<16;i++){
+      const a=rand(0,6.28), sp=rand(60,320);
+      bursts.push({x:prey.x,y:prey.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,c:prey.s.color});
+    }
+    bursts.push({ring:true,x:prey.x,y:prey.y,r:prey.size*.9,life:1,c:prey.s.color});
+    hit = true;
+  }
+  if(wandTeaser && Math.hypot(x-wandTeaser.x, y-wandTeaser.y)<=wandTeaser.size*2.4){
+    catches++; segCatches++; hudCatch.textContent=catches;
+    squeak();
+    for(let i=0;i<14;i++){
+      const a=rand(0,6.28), sp=rand(80,280);
+      bursts.push({x:wandTeaser.x,y:wandTeaser.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:0.9,c:wandTeaser.color});
+    }
+    wandTeaser = null;
+    hit = true;
+  }
+  for(let i=decoys.length-1; i>=0; i--){
+    const dec = decoys[i];
+    if(Math.hypot(x-dec.x, y-dec.y)<=dec.size*2.0){
+      catches++; segCatches++; hudCatch.textContent=catches;
+      squeak();
+      for(let j=0; j<10; j++){
+        const a=rand(0,6.28), sp=rand(60,220);
+        bursts.push({x:dec.x,y:dec.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:0.8,c:dec.color});
+      }
+      decoys.splice(i, 1);
+      hit = true;
+    }
+  }
+  if(hit) return true;
+  if(countMiss && prey){ prey.fatigue+=1; segStreak=0; }
+  return false;
+}
+
+function pt(e){
+  const r=fieldEl.getBoundingClientRect();
+  return {x:e.clientX-r.left, y:e.clientY-r.top};
+}
+fieldEl.addEventListener("pointerdown",e=>{
+  e.preventDefault();
+  const p=pt(e); paws.set(e.pointerId,p); idle=0;
+  if(running){ segTaps++; disturb(p.x,p.y); tryCatch(p.x,p.y,true); }
+  try{fieldEl.setPointerCapture(e.pointerId);}catch(err){}
+},{passive:false});
+fieldEl.addEventListener("pointermove",e=>{
+  if(!paws.has(e.pointerId)) return;
+  const p=pt(e); paws.set(e.pointerId,p); idle=0;
+  if(running){
+    if(Math.random()<.18) disturb(p.x,p.y);
+    tryCatch(p.x,p.y,false);
+  }
+},{passive:false});
+["pointerup","pointercancel","pointerleave"].forEach(t=>
+  fieldEl.addEventListener(t,e=>paws.delete(e.pointerId)));
+fieldEl.addEventListener("contextmenu",e=>e.preventDefault());
+
+function loop(ts){
+  const dt=Math.min(.05,(ts-last)/1000||.016); last=ts;
+  raf=requestAnimationFrame(loop);
+  if(!running) return;
+
+  left-=dt; idle+=dt;
+  if(idle>segMaxIdle) segMaxIdle=idle;
+  if(idle<10) segEngaged+=dt;                 // rough measure of time actually engaged
+  hudTime.textContent=fmt(left);
+
+  // Last 45 seconds the quarry tires, so the session is likely to end on a catch
+  // rather than break off mid-chase.
+  prey.wind = left<45 ? .45+.55*(left/45) : 1;
+  // Fast idle recovery: if screen untouched for 7s, activate attract twitching
+  prey.attract = idle>7;
+  if(idle>6.5){
+    if((total-left)-lastChirpAt > rand(5, 8)){
+      curiosityChirp();
+      lastChirpAt = (total-left);
+    }
+    if(!wandTeaser && (total-left)-lastTeaserAt > 8){
+      lastTeaserAt = (total-left);
+      const fromLeft = Math.random()<0.5;
+      const sx = fromLeft ? -24 : W+24, ex = fromLeft ? W+36 : -36;
+      const sy = rand(H*0.2, H*0.8), ey = rand(H*0.2, H*0.8);
+      wandTeaser = {
+        x: sx, y: sy, sx, sy, ex, ey,
+        cpx: rand(W*0.25, W*0.75), cpy: rand(H*0.1, H*0.9),
+        t: 0, dur: rand(0.9, 1.4), color: prey ? prey.s.color : "#f0de6b",
+        size: Math.min(W, H)*0.042
+      };
+      disturb(W/2, H/2);
+    }
+  }
+
+  if(shuffle && left<shuffleAt){
+    const pool=ORDER.filter(k=>k!==kind);
+    swapTo(pool[(Math.random()*pool.length)|0]);
+    shuffleAt=left-rand(50,110);
+  }
+  if(autoRotate && left<rotateAt){
+    rotateBackdropFilter();
+    rotateAt=left-rand(40,90);
+  }
+  if(hudTimer>0){ hudTimer-=dt; if(hudTimer<=0) hud.classList.add("dim"); }
+  if(left<=0){ endGame(); return; }
+
+  prey.step(dt,[...paws.values()]);
+
+  fx.clearRect(0,0,W,H);
+  if(groundCv) fx.drawImage(groundCv,0,0,W,H);
+  stepMotes(dt,W,H,ts);
+  drawMotes(fx);
+  for(const c of covers){
+    let sx=0, sy=0;
+    if(c.shake>.004){
+      c.shake*=Math.exp(-5.5*dt);
+      sx=Math.sin(ts*.045+c.seed)*c.r*.10*c.shake;
+      sy=Math.cos(ts*.061+c.seed)*c.r*.05*c.shake;
+    }else c.shake=0;
+    fx.drawImage(c.cv, c.x-c.off+sx, c.y-c.off+sy, c.side, c.side);
+  }
+
+  for(let i=bursts.length-1;i>=0;i--){
+    const b=bursts[i];
+    b.life-=dt*(b.ring?2.4:1.7);
+    if(b.life<=0){ bursts.splice(i,1); continue; }
+    fx.globalAlpha=Math.max(0,b.life);
+    if(b.ring){
+      b.r+=dt*340;
+      fx.strokeStyle=b.c; fx.lineWidth=3;
+      fx.beginPath(); fx.arc(b.x,b.y,b.r,0,6.284); fx.stroke();
+    }else{
+      b.x+=b.vx*dt; b.y+=b.vy*dt;
+      const k=b.dust?.88:.94; b.vx*=k; b.vy*=k;
+      fx.fillStyle=b.c;
+      fx.beginPath(); fx.arc(b.x,b.y,b.dust?2.1:3.4,0,6.284); fx.fill();
+    }
+    fx.globalAlpha=1;
+  }
+
+  // Step and draw wand teaser
+  if(wandTeaser){
+    wandTeaser.t += dt / wandTeaser.dur;
+    const t = Math.min(1, wandTeaser.t);
+    const u = 1 - t;
+    wandTeaser.x = u*u*wandTeaser.sx + 2*u*t*wandTeaser.cpx + t*t*wandTeaser.ex;
+    wandTeaser.y = u*u*wandTeaser.sy + 2*u*t*wandTeaser.cpy + t*t*wandTeaser.ey;
+    if(Math.random() < 0.65){
+      bursts.push({
+        x: wandTeaser.x + rand(-3,3), y: wandTeaser.y + rand(-3,3),
+        vx: rand(-25,25), vy: rand(-25,25),
+        life: 0.45, c: wandTeaser.color, dust: 1
+      });
+    }
+    fx.save();
+    fx.shadowColor = wandTeaser.color; fx.shadowBlur = 18;
+    fx.fillStyle = wandTeaser.color;
+    fx.beginPath();
+    fx.ellipse(wandTeaser.x, wandTeaser.y, wandTeaser.size*0.9, wandTeaser.size*0.42, Math.sin(ts*0.02), 0, 7);
+    fx.fill();
+    fx.fillStyle = "#ffffff";
+    fx.beginPath();
+    fx.arc(wandTeaser.x, wandTeaser.y, wandTeaser.size*0.35, 0, 7);
+    fx.fill();
+    fx.restore();
+    if(wandTeaser.t >= 1){ wandTeaser = null; }
+  }
+
+  // Manage frenzy decoys
+  if(frenzy){
+    if(decoys.length < 2 && Math.random() < 0.035){
+      const dKind = ["beetle","ant","shrimp","laser"][(Math.random()*4)|0];
+      const dCol = SPECIES[dKind] ? SPECIES[dKind].color : "#62b4e0";
+      decoys.push({
+        x: Math.random()<0.5 ? 12 : W-12, y: rand(20, H-20),
+        vx: rand(-190, 190), vy: rand(-190, 190),
+        size: Math.min(W, H)*0.024, color: dCol, ph: rand(0, 6),
+        t: rand(3.5, 7.5), k: dKind
+      });
+    }
+    for(let i=decoys.length-1; i>=0; i--){
+      const dec = decoys[i];
+      dec.t -= dt; dec.ph += dt * 10;
+      dec.x += dec.vx * dt; dec.y += dec.vy * dt;
+      if(dec.x < 12 || dec.x > W-12) dec.vx *= -1;
+      if(dec.y < 12 || dec.y > H-12) dec.vy *= -1;
+      fx.save();
+      fx.shadowColor = dec.color; fx.shadowBlur = 10;
+      fx.fillStyle = dec.color;
+      fx.beginPath();
+      fx.arc(dec.x, dec.y, dec.size*0.85, 0, 7);
+      fx.fill();
+      fx.restore();
+      if(dec.t <= 0) decoys.splice(i, 1);
+    }
+  } else {
+    decoys.length = 0;
+  }
+
+  prey.draw(fx);
+}
+
+/* hold-to-quit so a paw can't end the session */
+const quit=document.getElementById("quit");
+let holdT=null;
+function holdStart(e){
+  e.preventDefault(); e.stopPropagation();
+  quit.classList.add("holding");
+  holdT=setTimeout(()=>{ quit.classList.remove("holding"); endGame(); },1200);
+}
+function holdEnd(){ quit.classList.remove("holding"); clearTimeout(holdT); }
+quit.addEventListener("pointerdown",holdStart,{passive:false});
+["pointerup","pointercancel","pointerleave"].forEach(t=>quit.addEventListener(t,holdEnd));
+
+/* ================= wiring ================= */
+const peek=document.getElementById("peek");
+peek.addEventListener("click",()=>{
+  const on=document.body.classList.toggle("cv");
+  peek.setAttribute("aria-pressed",String(on));
+  peek.textContent=on?"Your vision":"Cat vision";
+});
+swapBtn.addEventListener("pointerdown",e=>{
+  e.preventDefault(); e.stopPropagation();
+  swapBtn.classList.add("holding");
+  swapHold=setTimeout(()=>{ swapBtn.classList.remove("holding"); openSwap(); },500);
+},{passive:false});
+["pointerup","pointercancel","pointerleave"].forEach(t=>
+  swapBtn.addEventListener(t,()=>{ swapBtn.classList.remove("holding"); clearTimeout(swapHold); }));
+
+/* ---- change look and sound without leaving the session ---- */
+const optsBtn=document.getElementById("opts"), optsBar=document.getElementById("optsbar");
+let optsHold=null, optsAuto=null;
+function openOpts(){
+  closeSwap();
+  optsBar.classList.add("open");
+  syncSegUI();
+  clearTimeout(optsAuto);
+  optsAuto=setTimeout(closeOpts,14000);
+}
+function closeOpts(){ optsBar.classList.remove("open"); clearTimeout(optsAuto); }
+optsBtn.addEventListener("pointerdown",e=>{
+  e.preventDefault(); e.stopPropagation();
+  optsBtn.classList.add("holding");
+  optsHold=setTimeout(()=>{ optsBtn.classList.remove("holding"); openOpts(); },500);
+},{passive:false});
+["pointerup","pointercancel","pointerleave"].forEach(t=>
+  optsBtn.addEventListener(t,()=>{ optsBtn.classList.remove("holding"); clearTimeout(optsHold); }));
+
+fieldEl.addEventListener("pointerdown",()=>{
+  if(swapBar.classList.contains("open")) closeSwap();
+  if(optsBar.classList.contains("open")) closeOpts();
+});
+
+document.getElementById("start").addEventListener("click",startGame);
+document.getElementById("again").addEventListener("click",startGame);
+document.getElementById("home-btn").addEventListener("click",()=>{ show("home"); sizePreview(); });
+
+addEventListener("resize",()=>{ sizePreview(); paintSpecimenChips(); if(document.getElementById("play").classList.contains("on")) sizeField(); });
+document.addEventListener("visibilitychange",()=>{ if(document.hidden && running) endGame(); });
+
+// Cat-proof iOS multi-touch and accidental zoom/magnifier gestures
+['gesturestart', 'gesturechange', 'gestureend'].forEach(function(evt){
+  document.addEventListener(evt, function(e){ e.preventDefault(); }, { passive: false });
+});
+document.addEventListener('dblclick', function(e){ e.preventDefault(); }, { passive: false });
+
+if ('serviceWorker' in navigator && (location.protocol === 'http:' || location.protocol === 'https:')) {
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', function(){
+    if (!refreshing) {
+      refreshing = true;
+      window.location.reload();
+    }
+  });
+
+  navigator.serviceWorker.register('./sw.js', {scope:'./', updateViaCache:'none'}).then(function(reg){
+    try { reg.update(); } catch(e){}
+    document.addEventListener("visibilitychange", function(){
+      if (!document.hidden) { try { reg.update(); } catch(e){} }
+    });
+    window.addEventListener("pageshow", function(){
+      try { reg.update(); } catch(e){}
+    });
+
+    reg.addEventListener('updatefound', function(){
+      var newWorker = reg.installing;
+      if (newWorker) {
+        newWorker.addEventListener('statechange', function(){
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            newWorker.postMessage({ action: 'skipWaiting' });
+          }
+        });
+      }
+    });
+  }).catch(function(err){
+    reportError("SW", err);
+  });
+}
+
+selectKind("beetle");
+setBackdrop("den");
+syncSegUI();
+renderRecord();
+requestAnimationFrame(()=>{
+  sizePreview();
+  paintSpecimenChips();
+  requestAnimationFrame(pvLoop);
+});
+
+/* The specimen window is sized by the layout rather than a fixed height, and on
+   a tablet that layout settles late — webfonts, rotation, Split View. Re-cut the
+   canvas backing stores whenever the boxes actually move. */
+if(window.ResizeObserver){
+  const ro=new ResizeObserver(()=>{ sizePreview(); paintSpecimenChips(); });
+  ro.observe(pv.parentElement); ro.observe(chipsEl);
+}
+if(document.fonts && document.fonts.ready){
+  document.fonts.ready.then(()=>{ sizePreview(); paintSpecimenChips(); });
+}
+})();
+</script>
+</body>
+</html>
