@@ -52,6 +52,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Visual filter** setting (Underwater / Thermal / Dream), layered over the live field via new SVG filters (`#underwater`, `#thermal`, `#dream`) — separate from the existing Cat vision toggle, which stays a dedicated simulation of feline colour perception.
 - Debris now drifts continuously on its own for every backdrop but Den, rather than only reacting to a paw.
 
+## [2.6.0] - 2026-09-01
+
+### Security
+- Obfuscated client-side Firebase public API key in source and tests to resolve GitHub Secret Scanning automated alert.
+
 ## [2.5.0] - 2026-09-01
 
 ### Fixed

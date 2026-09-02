@@ -76,7 +76,7 @@ class TestQuarryStandaloneApp(unittest.TestCase):
             self.assertIn('v1.9.0', content)
             self.assertIn('gateGoogleBtn', content)
             self.assertIn('authGate', content)
-            self.assertIn('AIzaSyCAB2x8toj3IHlfHCSEEglVx9pJdZMU9QE', content)
+            self.assertIn('FIREBASE_CONFIG', content)
             self.assertIn('data-min="0"', content)
             self.assertIn('splashScreen', content)
             self.assertIn('onboardingModal', content)
