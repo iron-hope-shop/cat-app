@@ -130,85 +130,117 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   .auth-bar{
     display:flex;
     align-items:center;
-    gap:8px;
+    gap:10px;
     margin-top:10px;
-    font-size:12.5px;
+    font-size:13px;
     color:var(--muted);
   }
-  .auth-btn{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    padding:5px 11px;
-    border-radius:16px;
-    font-size:12px;
-    font-weight:600;
-    background:var(--slate);
-    color:var(--bone);
-    border:1px solid var(--line);
-    cursor:pointer;
-    touch-action:manipulation;
-    transition:background .15s, border-color .15s;
-  }
-  .auth-btn:active{background:var(--slate-hi)}
-  .auth-btn svg{width:13px;height:13px;flex:none}
   .auth-user{
     display:none;
     align-items:center;
-    gap:6px;
+    gap:8px;
+    background:var(--slate);
+    padding:4px 12px 4px 6px;
+    border-radius:20px;
+    border:1px solid var(--line);
   }
   .auth-avatar{
-    width:20px;height:20px;border-radius:50%;
+    width:22px;height:22px;border-radius:50%;
     background:var(--wheat);
     display:inline-block;
   }
   .auth-signout{
-    background:none;border:none;color:var(--muted);
-    font-size:11.5px;text-decoration:underline;cursor:pointer;padding:0 4px;
+    background:none;border:none;color:var(--wheat);
+    font-size:12px;cursor:pointer;padding:0 2px;margin-left:4px;
+    font-weight:600;
   }
-  .auth-signout:hover{color:var(--wheat)}
-  .auth-modal{
-    display:none;
+  .auth-signout:hover{text-decoration:underline}
+
+  /* Full-Screen Mandatory Auth Gate */
+  .auth-gate{
     position:fixed;top:0;left:0;right:0;bottom:0;
-    background:rgba(8,12,16,0.85);backdrop-filter:blur(6px);
-    z-index:9999;align-items:center;justify-content:center;
-    padding:20px;
+    background:rgba(8,12,16,0.96);backdrop-filter:blur(12px);
+    z-index:99999;
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;box-sizing:border-box;
+    transition:opacity .25s ease, visibility .25s ease;
   }
-  .auth-modal.open{display:flex}
-  .auth-dialog{
+  .auth-gate.hidden{
+    opacity:0;visibility:hidden;pointer-events:none;
+  }
+  .auth-box{
     background:var(--slate);
     border:1px solid var(--line);
-    border-radius:16px;
-    padding:26px 22px 20px;
-    max-width:340px;width:100%;
-    box-shadow:0 16px 36px rgba(0,0,0,0.6);
+    border-radius:18px;
+    padding:32px 28px 26px;
+    max-width:380px;width:100%;
+    box-shadow:0 24px 60px rgba(0,0,0,0.7);
+    text-align:center;
   }
-  .auth-dialog h3{
+  .auth-badge{
+    display:inline-block;
+    font-size:11px;font-weight:700;
+    text-transform:uppercase;letter-spacing:0.06em;
+    color:var(--wheat);
+    background:rgba(240,222,107,0.12);
+    border:1px solid rgba(240,222,107,0.25);
+    padding:3px 10px;border-radius:12px;
+    margin-bottom:12px;
+  }
+  .auth-title{
     font-family:var(--display);
-    font-size:20px;
-    color:var(--bone);
-    margin-bottom:6px;
+    font-size:28px;font-weight:600;
+    color:var(--wheat);
+    line-height:1;
+    margin-bottom:8px;
   }
-  .auth-dialog p{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.4}
+  .auth-desc{
+    font-size:13.5px;color:var(--muted);
+    line-height:1.45;margin-bottom:20px;
+  }
+  .auth-google-btn{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    width:100%;box-sizing:border-box;
+    background:#ffffff;color:#1f1f1f;
+    font-size:14.5px;font-weight:600;
+    padding:12px 16px;border-radius:10px;
+    border:none;cursor:pointer;
+    box-shadow:0 2px 8px rgba(0,0,0,0.25);
+    transition:transform .1s, filter .1s;
+    touch-action:manipulation;
+  }
+  .auth-google-btn:active{transform:scale(.985);filter:brightness(.95)}
+  .auth-google-btn svg{width:18px;height:18px;flex:none}
+  .auth-divider{
+    display:flex;align-items:center;
+    margin:18px 0;color:var(--muted);font-size:12px;
+  }
+  .auth-divider::before,.auth-divider::after{
+    content:"";flex:1;height:1px;background:var(--line);
+  }
+  .auth-divider span{padding:0 10px}
   .auth-input{
     width:100%;box-sizing:border-box;
-    padding:10px 12px;border-radius:8px;
+    padding:11px 14px;border-radius:9px;
     background:var(--field);border:1px solid var(--line);
     color:var(--bone);font-size:14px;margin-bottom:10px;
   }
   .auth-input:focus{outline:none;border-color:var(--wheat)}
-  .auth-actions{display:flex;gap:8px;margin-top:6px}
   .auth-submit{
-    flex:1;background:var(--wheat);color:#141a10;
-    font-size:14px;font-weight:600;padding:10px;
-    border-radius:8px;border:none;cursor:pointer;
+    width:100%;box-sizing:border-box;
+    background:var(--wheat);color:#141a10;
+    font-size:14.5px;font-weight:600;
+    padding:12px;border-radius:9px;
+    border:none;cursor:pointer;margin-top:4px;
+    transition:transform .1s, filter .1s;
+    touch-action:manipulation;
   }
-  .auth-cancel{
-    background:var(--slate-hi);color:var(--bone);
-    font-size:13px;padding:10px 14px;
-    border-radius:8px;border:none;cursor:pointer;
+  .auth-submit:active{transform:scale(.985);filter:brightness(.95)}
+  .auth-status{
+    font-size:12.5px;color:#cf9090;
+    margin-top:10px;min-height:16px;
+    line-height:1.35;
   }
-  .auth-status{font-size:12px;color:#cf9090;margin-top:8px;min-height:16px}
   .done-foot{
     margin-top:20px;
     font-size:13px;
@@ -403,7 +435,14 @@ details[open] summary::after{content:"–"}
 
 /* ---------- play ---------- */
 #play{position:fixed;inset:0;background:#080c10;flex-direction:column}
-#field{display:block;position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+#field{
+  display:block;position:absolute;inset:0;width:100%;height:100%;touch-action:none;
+  will-change:transform, filter;
+  transform:translateZ(0);
+  -webkit-transform:translateZ(0);
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
 .hud{
   position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:18px;
   text-align:right;font-size:13px;color:#3d4c5a;pointer-events:none;
@@ -516,14 +555,9 @@ details[open] summary::after{content:"–"}
 <main id="home" class="screen on">
   <div class="home-app">
     <div class="home-primary">
-      <h1 class="wordmark">cat-app <span class="build-tag">v1.8.0</span></h1>
+      <h1 class="wordmark">cat-app <span class="build-tag">v1.9.0</span></h1>
       <p class="standfirst">A hunting game drawn for the way cats actually see.</p>
       <div class="auth-bar" id="authBar">
-        <button class="auth-btn" id="googleLoginBtn" aria-label="Sign in with Google">
-          <svg viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/><path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15s.7 5.3 1.9 7.7l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/></svg>
-          Google SSO
-        </button>
-        <button class="auth-btn" id="emailLoginBtn" aria-label="Sign in with Email">Email</button>
         <span class="auth-user" id="authUser">
           <span class="auth-avatar" id="authAvatar"></span>
           <span id="authName"></span>
@@ -543,7 +577,7 @@ details[open] summary::after{content:"–"}
       <section class="block block-first">
         <h2 class="block-h">What they'll be chasing</h2>
         <p class="block-sub">Each one moves on a different rhythm. Cats who ignore one will often chase another.</p>
-        <div class="specimens" id="specimens" role="radiogroup" aria-label="Choose quarry"></div>
+        <div class="specimens" id="specimens" role="radiogroup" aria-label="Choose critter"></div>
         <p class="specimen-note" id="specimenNote"></p>
       </section>
 
@@ -557,10 +591,11 @@ details[open] summary::after{content:"–"}
               <button data-min="5" aria-pressed="false">5 min</button>
               <button data-min="10" aria-pressed="true">10 min</button>
               <button data-min="15" aria-pressed="false">15 min</button>
+              <button data-min="0" aria-pressed="false">∞</button>
             </div>
           </div>
           <div class="row">
-            <span class="row-label">Shuffle quarry
+            <span class="row-label">Shuffle critters
               <small>Swaps to a different creature every minute or two, on its own.</small>
             </span>
             <div class="seg" id="shufSeg">
@@ -609,12 +644,12 @@ details[open] summary::after{content:"–"}
             </div>
           </div>
           <div class="row">
-            <span class="row-label">Auto rotate
+            <span class="row-label">Shuffle filter & backdrop
               <small>Cycles backdrop and filter on its own during play.</small>
             </span>
             <div class="seg" id="arotSeg">
-              <button data-ar="1" aria-pressed="true">On</button>
-              <button data-ar="0" aria-pressed="false">Off</button>
+              <button data-ar="0" aria-pressed="true">Off</button>
+              <button data-ar="1" aria-pressed="false">On</button>
             </div>
           </div>
         </div>
@@ -687,8 +722,8 @@ details[open] summary::after{content:"–"}
   <div class="hud" id="hud"><b id="hudCatch">0</b> caught<br><span id="hudTime">10:00</span></div>
   <button id="quit" aria-label="Hold to end session">hold to end</button>
   <button id="opts" aria-label="Hold to change look and sound">hold to<br>tune</button>
-  <button id="swap" aria-label="Hold to change quarry">hold to<br>swap</button>
-  <div class="swapbar" id="swapbar" role="radiogroup" aria-label="Change quarry"></div>
+  <button id="swap" aria-label="Hold to change critter">hold to<br>swap</button>
+  <div class="swapbar" id="swapbar" role="radiogroup" aria-label="Change critter"></div>
   <div class="optsbar" id="optsbar">
     <div class="opts-row"><span>Backdrop</span><div class="opts-seg" id="optsBg">
       <button data-bg="den">Den</button><button data-bg="underwater">Water</button>
@@ -698,10 +733,10 @@ details[open] summary::after{content:"–"}
       <button data-f="none">None</button><button data-f="underwater">Water</button>
       <button data-f="thermal">Thermal</button><button data-f="dream">Dream</button>
     </div></div>
-    <div class="opts-row"><span>Auto rotate</span><div class="opts-seg" id="optsArot">
+    <div class="opts-row"><span>Shuffle filter & backdrop</span><div class="opts-seg" id="optsArot">
       <button data-ar="1">On</button><button data-ar="0">Off</button>
     </div></div>
-    <div class="opts-row"><span>Shuffle quarry</span><div class="opts-seg" id="optsShuf">
+    <div class="opts-row"><span>Shuffle critters</span><div class="opts-seg" id="optsShuf">
       <button data-s="1">On</button><button data-s="0">Off</button>
     </div></div>
     <div class="opts-row"><span>Audio</span><div class="opts-seg" id="optsSnd">
@@ -725,22 +760,28 @@ details[open] summary::after{content:"–"}
     <button class="btn-1" id="again">Run it again</button>
     <button class="btn-2" id="home-btn">Change the setup</button>
   </div>
-  <div class="done-foot">cat-app <span class="build-tag">v1.8.0</span></div>
+  <div class="done-foot">cat-app <span class="build-tag">v1.9.0</span></div>
 </section>
 
-<!-- ============ AUTH MODAL ============ -->
-<div class="auth-modal" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
-  <div class="auth-dialog">
-    <h3 id="authTitle">Sign in with Email</h3>
-    <p>Save and sync your cat's hunting stats across all your devices.</p>
-    <form id="authForm">
-      <input class="auth-input" type="email" id="authEmail" placeholder="you@example.com" required autocomplete="email" />
-      <input class="auth-input" type="password" id="authPassword" placeholder="Password (min 6 chars)" minlength="6" required autocomplete="current-password" />
-      <div class="auth-actions">
-        <button class="auth-submit" type="submit" id="authSubmit">Sign in / Register</button>
-        <button class="auth-cancel" type="button" id="authCancel">Cancel</button>
-      </div>
-      <div class="auth-status" id="authStatus"></div>
+<!-- ============ AUTH GATE (MANDATORY LOGIN) ============ -->
+<div class="auth-gate" id="authGate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+  <div class="auth-box">
+    <div class="auth-badge">Feline Hunting Game</div>
+    <h2 class="auth-title" id="gateTitle">cat-app <span class="build-tag">v1.9.0</span></h2>
+    <p class="auth-desc">Sign in with Google SSO or Email to unlock feline hunting & session stats.</p>
+
+    <button class="auth-google-btn" id="gateGoogleBtn" type="button" aria-label="Sign in with Google SSO">
+      <svg viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/><path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15s.7 5.3 1.9 7.7l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/></svg>
+      Continue with Google SSO
+    </button>
+
+    <div class="auth-divider"><span>or with email</span></div>
+
+    <form id="gateAuthForm">
+      <input class="auth-input" type="email" id="gateAuthEmail" placeholder="you@example.com" required autocomplete="email" />
+      <input class="auth-input" type="password" id="gateAuthPassword" placeholder="Password (minimum 6 characters)" minlength="6" required autocomplete="current-password" />
+      <button class="auth-submit" type="submit" id="gateAuthSubmit">Sign in / Register</button>
+      <div class="auth-status" id="gateAuthStatus"></div>
     </form>
   </div>
 </div>
@@ -782,7 +823,7 @@ const SPECIES = {
     label:"Fish", size:38, speed:290, accel:4, continuous:true,
     dart:[1.0,2.2], pause:[.30,.90], turnBias:1.6, edgeHug:0, glow:16,
     color:"#62b4e0",
-    note:"Slow, smooth, and unhurried. The gentle option — worth trying with kittens, senior cats, or anyone the faster quarry overwhelms."
+    note:"Slow, smooth, and unhurried. The gentle option — worth trying with kittens, senior cats, or anyone the faster critters overwhelm."
   }
 };
 const EXTRA = {
@@ -832,13 +873,13 @@ const EXTRA = {
     label:"Worm", size:29, speed:340, accel:3, continuous:true, trail:true,
     dart:[1.2,2.8], pause:[.2,.6], turnBias:1.9, edgeHug:0, glow:12,
     color:"#f0cf9a",
-    note:"A slow undulating crawl with a long body that follows the path behind it. The least alarming option — worth trying on nervous cats, kittens, and anyone the fast quarry sends running."
+    note:"A slow undulating crawl with a long body that follows the path behind it. The least alarming option — worth trying on nervous cats, kittens, and anyone the fast critters send running."
   },
   ant:{
     label:"Ant", size:22, speed:560, accel:16,
     dart:[.12,.30], pause:[.20,.85], turnBias:2.0, edgeHug:.15, glow:10,
     color:"#c47a4a",
-    note:"Small, quick, and low to the ground, in short determined lines rather than the beetle's scuttle. A good second, smaller quarry once a cat has mastered the beetle."
+    note:"Small, quick, and low to the ground, in short determined lines rather than the beetle's scuttle. A good second, smaller critter once a cat has mastered the beetle."
   },
   butterfly:{
     label:"Butterfly", size:34, speed:340, accel:5, continuous:true,
@@ -856,7 +897,7 @@ const EXTRA = {
     label:"Jellyfish", size:36, speed:200, accel:3, continuous:true, bob:true, vertical:true,
     dart:[1.0,2.0], pause:[.4,1.0], turnBias:1.0, edgeHug:0, glow:22,
     color:"#c9a6f2",
-    note:"Drifts more than it swims, pulsing gently as it rises. The calmest thing here — closer to a lava lamp than prey — good for cats the faster quarry overwhelms."
+    note:"Drifts more than it swims, pulsing gently as it rises. The calmest thing here — closer to a lava lamp than prey — good for cats the faster critters overwhelm."
   }
 };
 Object.assign(SPECIES, EXTRA);
@@ -1883,7 +1924,7 @@ function pvLoop(ts){
 /* ================= record ================= */
 /* Persisted if the browser allows it, held in memory if not. Nothing leaves
    the device — export writes a file straight from the page. */
-const KEY="quarry.log.v1";
+const KEY="cat-app.log.v1";
 const store=(()=>{
   try{
     const t="__q"; localStorage.setItem(t,"1"); localStorage.removeItem(t);
@@ -1912,7 +1953,7 @@ const csvCell=v=>{
   return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
 };
 function toCSV(){
-  const head=["started","quarry","minutes","catches","pounces","accuracy",
+  const head=["started","critter","minutes","catches","pounces","accuracy",
               "catches_per_min","engaged_minutes","longest_pause_s","session_length_min",
               "best_streak","avg_pursuit_s","backdrop","filter"];
   const rows=LOG.map(r=>[
@@ -1983,10 +2024,10 @@ function renderRecord(){
     '<div class="kpi"><b>'+K.bestStreak+'</b><span>best streak</span></div>'+
     '<div class="kpi"><b>'+K.streak+'</b><span>day streak</span></div>'+
     '</div>'+
-    '<p class="rec-fav">Favourite quarry: <b style="color:var(--bone);font-weight:500">'+K.favSpecies+
+    '<p class="rec-fav">Favourite critter: <b style="color:var(--bone);font-weight:500">'+K.favSpecies+
     '</b> · Favourite backdrop: <b style="color:var(--bone);font-weight:500">'+K.favBackdrop+'</b></p>';
 
-  html+='<table><thead><tr><th>Quarry</th><th>Runs</th><th>Min</th><th>Catches</th><th>Rate</th><th>Hit</th></tr></thead><tbody>';
+  html+='<table><thead><tr><th>Critter</th><th>Runs</th><th>Min</th><th>Catches</th><th>Rate</th><th>Hit</th></tr></thead><tbody>';
   keys.forEach(k=>{
     const b=by[k];
     html+='<tr><td>'+SPECIES[k].label+'</td><td>'+b.n+'</td><td>'+mins(b.m)+
@@ -2124,10 +2165,10 @@ wireSeg("optsArot", d=>{ autoRotate=d.ar==="1"; if(autoRotate) rotateAt=left-ran
 /* ================= game ================= */
 const fieldEl=document.getElementById("field"), fx=fieldEl.getContext("2d");
 const hud=document.getElementById("hud"), hudCatch=document.getElementById("hudCatch"), hudTime=document.getElementById("hudTime");
-let W=0,H=0,prey=null,paws=new Map(),bursts=[],catches=0,left=0,running=false,last=0,raf=0,wake=null,hudTimer=0;
+let W=0,H=0,prey=null,paws=new Map(),bursts=[],catches=0,left=0,elapsed=0,isInfinite=false,running=false,last=0,raf=0,wake=null,hudTimer=0;
 let idle=0, total=0, sessionLog=[];
 let shuffle=false, shuffleAt=0;
-let autoRotate=true, rotateAt=0;
+let autoRotate=false, rotateAt=0;
 let frenzy=true, decoys=[], wandTeaser=null, lastChirpAt=0, lastTeaserAt=0;
 let segKind='beetle', segCatches=0, segStartLeft=0, segTaps=0, segMaxIdle=0, segEngaged=0;
 let segStreak=0, segBestStreak=0, segLastCatchAt=null, segPursuitSum=0, segPursuitN=0;
@@ -2161,12 +2202,13 @@ function startGame(){
     sizeField();
     makeCovers(W,H);
     prey=new Prey(kind,W,H);
-    catches=0; bursts=[]; paws.clear(); left=minutes*60; total=left; idle=0; running=true;
+    isInfinite = (minutes === 0 || minutes === Infinity);
+    catches=0; bursts=[]; paws.clear(); elapsed=0; left = isInfinite ? Infinity : minutes*60; total=left; idle=0; running=true;
     segKind=kind; resetSeg(); sessionRecords=[]; markSwapChips(); closeSwap(); closeOpts(); syncSegUI();
-    wandTeaser=null; decoys=[]; lastChirpAt=left; lastTeaserAt=left;
-    shuffleAt=left-rand(50,110);
-    rotateAt=left-rand(40,90);
-    hudCatch.textContent="0"; hudTime.textContent=fmt(left);
+    wandTeaser=null; decoys=[]; lastChirpAt = isInfinite ? 0 : left; lastTeaserAt = isInfinite ? 0 : left;
+    shuffleAt = isInfinite ? rand(50,110) : left-rand(50,110);
+    rotateAt = isInfinite ? rand(40,90) : left-rand(40,90);
+    hudCatch.textContent="0"; hudTime.textContent = isInfinite ? "∞ 0:00" : fmt(left);
     hud.classList.remove("dim"); hudTimer=4;
     last=performance.now();
     cancelAnimationFrame(raf); raf=requestAnimationFrame(loop);
@@ -2186,7 +2228,7 @@ function endGame(){
   document.getElementById("tally").textContent=catches;
   document.getElementById("tallyLabel").textContent=catches===1?"catch":"catches";
   document.getElementById("doneCopy").textContent = catches===0
-    ? "No catches this time, which usually means the quarry was wrong rather than the cat. Try the fish or the moth, and give them a real toy either way — the hunt still wound them up."
+    ? "No catches this time, which usually means the critter was wrong rather than the cat. Try the fish or the moth, and give them a real toy either way — the hunt still wound them up."
     : "Finish the sequence with something they can hold on to — a treat, a wand toy, a kickeroo. The catch is what closes the hunt and settles them down afterwards.";
   renderDoneKpis(priorBest);
   show("done");
@@ -2207,22 +2249,22 @@ function renderDoneKpis(priorBest){
 }
 
 function resetSeg(){
-  segCatches=0; segTaps=0; segMaxIdle=0; segEngaged=0; segStartLeft=left;
+  segCatches=0; segTaps=0; segMaxIdle=0; segEngaged=0; segStartLeft = isInfinite ? elapsed : left;
   segStreak=0; segBestStreak=0; segLastCatchAt=null; segPursuitSum=0; segPursuitN=0;
 }
 function closeSegment(){
-  const mins=(segStartLeft-Math.max(0,left))/60;
+  const mins = isInfinite ? (elapsed - segStartLeft)/60 : (segStartLeft - Math.max(0, left))/60;
   if(mins<=.15) return;                       // ignore momentary swaps
   const rec={
     t:new Date().toISOString(), k:segKind, m:mins, c:segCatches, p:segTaps,
-    e:segEngaged/60, mi:segMaxIdle, len:minutes,
+    e:segEngaged/60, mi:segMaxIdle, len: isInfinite ? "∞" : minutes,
     str:segBestStreak, pur: segPursuitN? +(segPursuitSum/segPursuitN).toFixed(2) : null,
     bd:backdrop, f:filterMode
   };
   LOG.push(rec); sessionRecords.push(rec); saveLog();
 }
 
-/* ---- change quarry without leaving the session ---- */
+/* ---- change critter without leaving the session ---- */
 const swapBtn=document.getElementById("swap"), swapBar=document.getElementById("swapbar");
 let swapHold=null, swapAuto=null;
 
@@ -2360,44 +2402,82 @@ function loop(ts){
   raf=requestAnimationFrame(loop);
   if(!running) return;
 
-  left-=dt; idle+=dt;
-  if(idle>segMaxIdle) segMaxIdle=idle;
-  if(idle<10) segEngaged+=dt;                 // rough measure of time actually engaged
-  hudTime.textContent=fmt(left);
-
-  // Last 45 seconds the quarry tires, so the session is likely to end on a catch
-  // rather than break off mid-chase.
-  prey.wind = left<45 ? .45+.55*(left/45) : 1;
-  // Fast idle recovery: if screen untouched for 7s, activate attract twitching
-  prey.attract = idle>7;
-  if(idle>6.5){
-    if((total-left)-lastChirpAt > rand(5, 8)){
-      curiosityChirp();
-      lastChirpAt = (total-left);
+  if(isInfinite){
+    elapsed+=dt; idle+=dt;
+    if(idle>segMaxIdle) segMaxIdle=idle;
+    if(idle<10) segEngaged+=dt;
+    hudTime.textContent="∞ "+fmt(elapsed);
+    prey.wind=1;
+    prey.attract = idle>7;
+    if(idle>6.5){
+      if(elapsed-lastChirpAt > rand(5, 8)){
+        curiosityChirp();
+        lastChirpAt=elapsed;
+      }
+      if(!wandTeaser && elapsed-lastTeaserAt > 8){
+        lastTeaserAt=elapsed;
+        const fromLeft = Math.random()<0.5;
+        const sx = fromLeft ? -24 : W+24, ex = fromLeft ? W+36 : -36;
+        const sy = rand(H*0.2, H*0.8), ey = rand(H*0.2, H*0.8);
+        wandTeaser = {
+          x: sx, y: sy, sx, sy, ex, ey,
+          cpx: rand(W*0.25, W*0.75), cpy: rand(H*0.1, H*0.9),
+          t: 0, dur: rand(0.9, 1.4), color: prey ? prey.s.color : "#f0de6b",
+          size: Math.min(W, H)*0.042
+        };
+        disturb(W/2, H/2);
+      }
     }
-    if(!wandTeaser && (total-left)-lastTeaserAt > 8){
-      lastTeaserAt = (total-left);
-      const fromLeft = Math.random()<0.5;
-      const sx = fromLeft ? -24 : W+24, ex = fromLeft ? W+36 : -36;
-      const sy = rand(H*0.2, H*0.8), ey = rand(H*0.2, H*0.8);
-      wandTeaser = {
-        x: sx, y: sy, sx, sy, ex, ey,
-        cpx: rand(W*0.25, W*0.75), cpy: rand(H*0.1, H*0.9),
-        t: 0, dur: rand(0.9, 1.4), color: prey ? prey.s.color : "#f0de6b",
-        size: Math.min(W, H)*0.042
-      };
-      disturb(W/2, H/2);
+    if(shuffle && elapsed>shuffleAt){
+      const pool=ORDER.filter(k=>k!==kind);
+      swapTo(pool[(Math.random()*pool.length)|0]);
+      shuffleAt=elapsed+rand(50,110);
     }
-  }
+    if(autoRotate && elapsed>rotateAt){
+      rotateBackdropFilter();
+      rotateAt=elapsed+rand(40,90);
+    }
+  } else {
+    left-=dt; idle+=dt;
+    if(idle>segMaxIdle) segMaxIdle=idle;
+    if(idle<10) segEngaged+=dt;                 // rough measure of time actually engaged
+    hudTime.textContent=fmt(left);
 
-  if(shuffle && left<shuffleAt){
-    const pool=ORDER.filter(k=>k!==kind);
-    swapTo(pool[(Math.random()*pool.length)|0]);
-    shuffleAt=left-rand(50,110);
-  }
-  if(autoRotate && left<rotateAt){
-    rotateBackdropFilter();
-    rotateAt=left-rand(40,90);
+    // Last 45 seconds the quarry tires, so the session is likely to end on a catch
+    // rather than break off mid-chase.
+    prey.wind = left<45 ? .45+.55*(left/45) : 1;
+    // Fast idle recovery: if screen untouched for 7s, activate attract twitching
+    prey.attract = idle>7;
+    if(idle>6.5){
+      if((total-left)-lastChirpAt > rand(5, 8)){
+        curiosityChirp();
+        lastChirpAt = (total-left);
+      }
+      if(!wandTeaser && (total-left)-lastTeaserAt > 8){
+        lastTeaserAt = (total-left);
+        const fromLeft = Math.random()<0.5;
+        const sx = fromLeft ? -24 : W+24, ex = fromLeft ? W+36 : -36;
+        const sy = rand(H*0.2, H*0.8), ey = rand(H*0.2, H*0.8);
+        wandTeaser = {
+          x: sx, y: sy, sx, sy, ex, ey,
+          cpx: rand(W*0.25, W*0.75), cpy: rand(H*0.1, H*0.9),
+          t: 0, dur: rand(0.9, 1.4), color: prey ? prey.s.color : "#f0de6b",
+          size: Math.min(W, H)*0.042
+        };
+        disturb(W/2, H/2);
+      }
+    }
+
+    if(shuffle && left<shuffleAt){
+      const pool=ORDER.filter(k=>k!==kind);
+      swapTo(pool[(Math.random()*pool.length)|0]);
+      shuffleAt=left-rand(50,110);
+    }
+    if(autoRotate && left<rotateAt){
+      rotateBackdropFilter();
+      rotateAt=left-rand(40,90);
+    }
+    if(left<=0){ endGame(); return; }
   }
   if(hudTimer>0){ hudTimer-=dt; if(hudTimer<=0) hud.classList.add("dim"); }
   if(left<=0){ endGame(); return; }
@@ -2595,23 +2675,51 @@ if ('serviceWorker' in navigator && (location.protocol === 'http:' || location.p
   });
 }
 
-/* ================= Firebase SSO & Auth Setup ================= */
+/* ================= Firebase SSO & Auth Setup (Mandatory Login) ================= */
 const FIREBASE_CONFIG = window.FIREBASE_CONFIG || {
-  apiKey: "",
+  apiKey: "AIzaSyCAB2x8toj3IHlfHCSEEglVx9pJdZMU9QE",
   authDomain: "iron-hope-shop-ff854.firebaseapp.com",
   projectId: "iron-hope-shop-ff854",
   storageBucket: "iron-hope-shop-ff854.firebasestorage.app",
-  messagingSenderId: "",
-  appId: ""
+  messagingSenderId: "148109111215",
+  appId: "1:148109111215:web:208f61c9b7d974e064095a"
 };
 
-let fbAuth = null, fbProvider = null;
+let fbAuth = null, fbProvider = null, currentUser = null;
+const authGate = document.getElementById("authGate");
+const gateAuthForm = document.getElementById("gateAuthForm");
+const gateAuthStatus = document.getElementById("gateAuthStatus");
+const authUserEl = document.getElementById("authUser");
+const authNameEl = document.getElementById("authName");
+const authAvatarEl = document.getElementById("authAvatar");
+
+function updateAuthUI(user){
+  currentUser = user;
+  if(user){
+    authGate.classList.add("hidden");
+    authUserEl.style.display = "inline-flex";
+    authNameEl.textContent = user.displayName || user.email.split('@')[0];
+    if(user.photoURL){
+      authAvatarEl.style.backgroundImage = 'url('+user.photoURL+')';
+      authAvatarEl.style.backgroundSize = 'cover';
+    } else {
+      authAvatarEl.style.backgroundImage = 'none';
+      authAvatarEl.style.background = 'var(--wheat)';
+    }
+  } else {
+    authGate.classList.remove("hidden");
+    authUserEl.style.display = "none";
+    if(running) endGame();
+  }
+}
+
 function initFirebase(){
   try{
     if(window.firebase && window.firebase.initializeApp){
       if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
       fbAuth = firebase.auth();
       fbProvider = new firebase.auth.GoogleAuthProvider();
+      fbProvider.setCustomParameters({ prompt: 'select_account' });
       fbAuth.onAuthStateChanged(user => updateAuthUI(user));
     }
   }catch(e){
@@ -2619,92 +2727,55 @@ function initFirebase(){
   }
 }
 
-function updateAuthUI(user){
-  const userEl = document.getElementById("authUser");
-  const gBtn = document.getElementById("googleLoginBtn");
-  const eBtn = document.getElementById("emailLoginBtn");
-  const nameEl = document.getElementById("authName");
-  const avatarEl = document.getElementById("authAvatar");
-  if(user){
-    gBtn.style.display = "none";
-    eBtn.style.display = "none";
-    userEl.style.display = "inline-flex";
-    nameEl.textContent = user.displayName || user.email.split('@')[0];
-    if(user.photoURL){
-      avatarEl.style.backgroundImage = 'url('+user.photoURL+')';
-      avatarEl.style.backgroundSize = 'cover';
-    } else {
-      avatarEl.style.background = 'var(--wheat)';
-    }
-  } else {
-    gBtn.style.display = "inline-flex";
-    eBtn.style.display = "inline-flex";
-    userEl.style.display = "none";
-  }
-}
-
-// Wire Auth Buttons
-const authModal = document.getElementById("authModal");
-const authForm = document.getElementById("authForm");
-const authStatus = document.getElementById("authStatus");
-
-document.getElementById("googleLoginBtn").addEventListener("click", () => {
+document.getElementById("gateGoogleBtn").addEventListener("click", () => {
+  gateAuthStatus.textContent = "";
   if(!fbAuth){
-    alert("Firebase Auth: Please set your Firebase Web App apiKey in the configuration.");
+    gateAuthStatus.textContent = "Connecting to Google Auth service...";
     return;
   }
   fbAuth.signInWithPopup(fbProvider).catch(err => {
     if(err.code === "auth/popup-blocked" || err.code === "auth/popup-closed-by-user"){
-      fbAuth.signInWithRedirect(fbProvider).catch(e => alert(e.message));
+      fbAuth.signInWithRedirect(fbProvider).catch(e => { gateAuthStatus.textContent = e.message; });
     } else {
-      alert("Google Sign-in: " + err.message);
+      gateAuthStatus.textContent = err.message;
     }
   });
-});
-
-document.getElementById("emailLoginBtn").addEventListener("click", () => {
-  authStatus.textContent = "";
-  authModal.classList.add("open");
-});
-
-document.getElementById("authCancel").addEventListener("click", () => {
-  authModal.classList.remove("open");
 });
 
 document.getElementById("authSignout").addEventListener("click", () => {
   if(fbAuth) fbAuth.signOut();
 });
 
-authForm.addEventListener("submit", (e) => {
+gateAuthForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  const email = document.getElementById("authEmail").value.trim();
-  const pass = document.getElementById("authPassword").value;
+  const email = document.getElementById("gateAuthEmail").value.trim();
+  const pass = document.getElementById("gateAuthPassword").value;
   if(!fbAuth){
-    authStatus.textContent = "Firebase is not configured with apiKey yet.";
+    gateAuthStatus.textContent = "Firebase Auth service is still loading...";
     return;
   }
-  authStatus.style.color = "var(--wheat)";
-  authStatus.textContent = "Signing in...";
+  gateAuthStatus.style.color = "var(--wheat)";
+  gateAuthStatus.textContent = "Signing in...";
   fbAuth.signInWithEmailAndPassword(email, pass)
-    .then(() => { authModal.classList.remove("open"); })
+    .then(cred => { updateAuthUI(cred.user); })
     .catch(err => {
-      if(err.code === "auth/user-not-found" || err.code === "auth/invalid-credential"){
-        // Automatically attempt registration if user does not exist
-        authStatus.textContent = "Creating new account...";
+      if(err.code === "auth/user-not-found" || err.code === "auth/invalid-credential" || err.code === "auth/wrong-password"){
+        // Automatically attempt registration if user account does not exist
+        gateAuthStatus.textContent = "Creating new account & signing in...";
         fbAuth.createUserWithEmailAndPassword(email, pass)
-          .then(() => { authModal.classList.remove("open"); })
+          .then(regCred => { updateAuthUI(regCred.user); })
           .catch(regErr => {
-            authStatus.style.color = "#cf9090";
-            authStatus.textContent = regErr.message;
+            gateAuthStatus.style.color = "#cf9090";
+            gateAuthStatus.textContent = regErr.message;
           });
       } else {
-        authStatus.style.color = "#cf9090";
-        authStatus.textContent = err.message;
+        gateAuthStatus.style.color = "#cf9090";
+        gateAuthStatus.textContent = err.message;
       }
     });
 });
 
-// Load Firebase SDK non-blockingly (preserves 100% offline gameplay)
+// Load Firebase SDK non-blockingly
 if(navigator.onLine && (location.protocol === "http:" || location.protocol === "https:")){
   const s1 = document.createElement("script");
   s1.src = "https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js";
@@ -2715,6 +2786,11 @@ if(navigator.onLine && (location.protocol === "http:" || location.protocol === "
     document.head.appendChild(s2);
   };
   document.head.appendChild(s1);
+} else {
+  // Offline fallback: if no network, allow local session
+  setTimeout(() => {
+    if(!fbAuth) authGate.classList.add("hidden");
+  }, 1200);
 }
 
 selectKind("beetle");

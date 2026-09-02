@@ -52,6 +52,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Visual filter** setting (Underwater / Thermal / Dream), layered over the live field via new SVG filters (`#underwater`, `#thermal`, `#dream`) — separate from the existing Cat vision toggle, which stays a dedicated simulation of feline colour perception.
 - Debris now drifts continuously on its own for every backdrop but Den, rather than only reacting to a paw.
 
+## [1.12.0] - 2026-09-01
+
+### Changed
+- Defaulted "Shuffle critters" to **Off** and "Shuffle filter & backdrop" (renamed from Auto rotate) to **Off**.
+- Hardware-accelerated canvas compositing using 3D transform layers (`translateZ(0)`, `will-change: transform, filter`) and native WebGL/Metal GPU rasterization pipelines to eliminate SVG water ripple filter lag.
+- Bumped Service Worker cache to `cat-app-v12`.
+
+## [1.11.0] - 2026-09-01
+
+### Added
+- Added infinite session duration option (`∞`) in session length controls, allowing continuous play with elapsed timer tracking (`∞ MM:SS`) and manual quit handling.
+- Bumped Service Worker cache to `cat-app-v11`.
+
+## [1.10.0] - 2026-09-01
+
+### Changed
+- Renamed quarry UI and tuning references across the app to critters (e.g., "Shuffle critters", "Auto rotate critters", "Choose critter", "Favourite critter", and CSV headers).
+- Updated storage keys to `cat-app.log.v1` and bumped Service Worker cache to `cat-app-v10`.
+
+## [1.9.0] - 2026-09-01
+
+### Added
+- Configured live Firebase Web App parameters for `iron-hope-shop-ff854` (API Key, Project ID, App ID, Messaging Sender ID).
+- Mandatory full-screen authentication gate (`#authGate`) requiring Google SSO or Email/Password login before accessing game controls and quarry hunting field.
+- Dynamic user profile state management, sign-out locking, and automatic account registration.
+
 ## [1.8.0] - 2026-09-01
 
 ### Added

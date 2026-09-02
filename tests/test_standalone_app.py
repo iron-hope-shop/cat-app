@@ -73,14 +73,16 @@ class TestQuarryStandaloneApp(unittest.TestCase):
             self.assertIn('requestFullscreen().catch', content.replace(' ', ''))
             self.assertNotIn('async function startGame', content)
             self.assertIn('build-tag', content)
-            self.assertIn('v1.8.0', content)
-            self.assertIn('googleLoginBtn', content)
-            self.assertIn('emailLoginBtn', content)
+            self.assertIn('v1.9.0', content)
+            self.assertIn('gateGoogleBtn', content)
+            self.assertIn('authGate', content)
+            self.assertIn('AIzaSyCAB2x8toj3IHlfHCSEEglVx9pJdZMU9QE', content)
+            self.assertIn('data-min="0"', content)
 
     def test_service_worker_offline(self):
         with open('Quarry/www/sw.js', 'r', encoding='utf-8') as f:
             sw = f.read()
-        self.assertIn("CACHE_NAME = 'cat-app-v8'", sw)
+        self.assertIn("CACHE_NAME = 'cat-app-v12'", sw)
         self.assertIn('cache.add(url)', sw)
         self.assertNotIn('cache.addAll', sw)
         self.assertIn("request.mode === 'navigate'", sw)
