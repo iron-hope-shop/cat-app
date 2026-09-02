@@ -52,6 +52,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Visual filter** setting (Underwater / Thermal / Dream), layered over the live field via new SVG filters (`#underwater`, `#thermal`, `#dream`) — separate from the existing Cat vision toggle, which stays a dedicated simulation of feline colour perception.
 - Debris now drifts continuously on its own for every backdrop but Den, rather than only reacting to a paw.
 
+## [1.7.1] - 2026-09-01
+
+### Fixed
+- Removed untracked runtime `error.log` requirement from unit test assertions so GitHub Actions CI tests pass cleanly in fresh checkout environments.
+- Added graceful `swiftc` presence check in test suite for cross-platform CI runner compatibility.
+
 ## [1.7.0] - 2026-09-01
 
 ### Added
