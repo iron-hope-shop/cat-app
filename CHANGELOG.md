@@ -52,6 +52,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Visual filter** setting (Underwater / Thermal / Dream), layered over the live field via new SVG filters (`#underwater`, `#thermal`, `#dream`) — separate from the existing Cat vision toggle, which stays a dedicated simulation of feline colour perception.
 - Debris now drifts continuously on its own for every backdrop but Den, rather than only reacting to a paw.
 
+## [2.7.0] - 2026-09-01
+
+### Added
+- Interactive SCORM-style onboarding course with mascots, scientific findings, and feline testing:
+  - **Module 1 (Brix the Beetle)**: Feline Optics & Dichromatic Vision (~450nm & ~555nm cone sensitivities, 25Hz flicker fusion, why red laser fails).
+  - **Module 2 (Pip the Mouse)**: Anti-Boredom & Kinetic Algorithms (wand teaser logic, ambush tuft mechanics, dynamic catch expansion).
+  - **Module 3 (Ziggy the Snake)**: Starter Critter Calibration with live sinusoidal behavior profiles.
+  - **Module 4 (Lumi the Moth)**: 2-Step PWA installation & hardware Guided Access cat-proofing.
+  - **Module 5 (Nori the Fish)**: Predatory loop completion protocol and post-hunt physical reward guidelines.
+- Unified build version tags across screens to `v2.7.0`.
+- Bumped Service Worker cache to `cat-app-v19`.
+
 ## [2.6.0] - 2026-09-01
 
 ### Security

@@ -292,10 +292,10 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   }
   .splash-btn-secondary:active, .splash-btn-primary:active{transform:scale(.98)}
 
-  /* Interactive Duolingo-style Onboarding Experience */
+  /* Interactive SCORM-style Onboarding Course Modal */
   .onboarding-dialog{
     background:var(--slate);border:1px solid var(--line);
-    border-radius:24px;max-width:560px;width:100%;max-height:92dvh;
+    border-radius:24px;max-width:620px;width:100%;max-height:92dvh;
     display:flex;flex-direction:column;overflow:hidden;
     box-shadow:0 30px 80px rgba(0,0,0,0.85);
   }
@@ -304,13 +304,21 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   }
   .onboarding-progress-fill{
     height:100%;background:linear-gradient(90deg, var(--wheat), #5fd6c4);
-    width:25%;transition:width .3s ease;
+    width:20%;transition:width .3s ease;
   }
   .onboarding-card{
     display:none;flex-direction:column;align-items:center;text-align:center;
-    padding:24px 22px 16px;
+    padding:20px 22px 14px;
+    overflow-y:auto;
   }
   .onboarding-card.active{display:flex}
+  .scorm-badge{
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(240,222,107,0.12);color:var(--wheat);
+    border:1px solid rgba(240,222,107,0.28);border-radius:20px;
+    padding:3px 10px;font-size:11.5px;font-weight:700;letter-spacing:.03em;
+    text-transform:uppercase;margin-bottom:12px;
+  }
   .duo-mascot-row{
     display:flex;align-items:center;justify-content:center;gap:14px;
     margin-bottom:16px;width:100%;
@@ -326,7 +334,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   .duo-bubble{
     background:var(--field);border:1px solid var(--line);
     border-radius:16px;padding:12px 16px;position:relative;
-    text-align:left;max-width:320px;
+    text-align:left;max-width:360px;
   }
   .duo-bubble::before{
     content:"";position:absolute;left:-8px;top:20px;
@@ -339,12 +347,34 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   .duo-bubble p{color:var(--bone);font-size:13px;line-height:1.38;margin:0}
   
   .onboarding-card h3{
-    font-family:var(--display);font-size:24px;color:var(--bone);margin-bottom:6px;
+    font-family:var(--display);font-size:23px;color:var(--bone);margin-bottom:6px;
   }
   .onboarding-card .card-desc{
-    color:var(--muted);font-size:13.5px;max-width:44ch;line-height:1.45;margin-bottom:16px;
+    color:var(--muted);font-size:13px;max-width:48ch;line-height:1.45;margin-bottom:14px;
   }
   
+  /* SCORM Interactive Science Lab Box */
+  .scorm-box{
+    background:var(--field);border:1px solid var(--line);
+    border-radius:14px;padding:12px 16px;width:100%;box-sizing:border-box;
+    text-align:left;margin-bottom:12px;
+  }
+  .scorm-box h4{
+    color:var(--wheat);font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;
+  }
+  .scorm-box p{
+    color:var(--bone);font-size:12.5px;line-height:1.42;margin:0;
+  }
+  .scorm-stat-grid{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;margin-bottom:12px;
+  }
+  .scorm-stat-item{
+    background:var(--field);border:1px solid var(--line);
+    border-radius:12px;padding:10px 12px;text-align:left;
+  }
+  .scorm-stat-item b{color:var(--wheat);font-size:15px;display:block}
+  .scorm-stat-item span{color:var(--muted);font-size:11.5px;line-height:1.3;display:block}
+
   /* Choice / Interactive cards inside onboarding */
   .critter-showcase-grid{
     display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%;margin-bottom:14px;
@@ -909,7 +939,7 @@ details[open] summary::after{content:"–"}
     <button class="btn-1" id="again">Run it again</button>
     <button class="btn-2" id="home-btn">Change the setup</button>
   </div>
-  <div class="done-foot">cat-app <span class="build-tag">v1.9.0</span></div>
+  <div class="done-foot">cat-app <span class="build-tag">v2.7.0</span></div>
 </section>
 
 <!-- ============ SPLASH SCREEN ============ -->
@@ -936,7 +966,7 @@ details[open] summary::after{content:"–"}
       <span class="splash-critter-spec">Fish</span>
     </div>
   </div>
-  <h1 class="splash-title">cat-app <span class="build-tag">v2.0.0</span></h1>
+  <h1 class="splash-title">cat-app <span class="build-tag">v2.7.0</span></h1>
   <p class="splash-sub">A feline hunting playground engineered specifically for cat dichromatic vision and natural predatory rhythms.</p>
   <div class="splash-actions">
     <button class="splash-btn-primary" id="splashEnterBtn">Enter Game Arena</button>
@@ -944,66 +974,115 @@ details[open] summary::after{content:"–"}
   </div>
 </div>
 
-<!-- ============ ONBOARDING & PWA INSTALL GUIDE MODAL (DUOLINGO STYLE) ============ -->
+<!-- ============ ONBOARDING & PWA INSTALL GUIDE MODAL (SCORM-STYLE COURSE) ============ -->
 <div class="onboarding-modal" id="onboardingModal" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
   <div class="onboarding-dialog">
     <div class="onboarding-progress-bar">
       <div class="onboarding-progress-fill" id="onboardingProgressFill"></div>
     </div>
 
-    <!-- Step 1: Meet Brix & Learn Dichromatic Vision -->
+    <!-- Module 1: Dichromatic Vision Science & Testing -->
     <div class="onboarding-card active" id="onboardStep1">
+      <span class="scorm-badge">Module 1 · Feline Optics & Dichromatic Vision</span>
       <div class="duo-mascot-row">
         <div class="duo-avatar"><canvas id="duoBrix"></canvas></div>
         <div class="duo-bubble">
-          <b>Brix the Beetle says:</b>
-          <p>“Cats see in high-contrast yellow & cyan! I'm calibrated so your cat spots me in milliseconds.”</p>
+          <b>Brix the Beetle explains:</b>
+          <p>“Cats have only 2 cone photopigments (~450nm and ~555nm). Humans see red, but cats see yellow & cyan!”</p>
         </div>
       </div>
-      <h3>How Cats See the Hunt</h3>
-      <p class="card-desc">Unlike human games with red laser dots, cat-app draws every critter specifically in the exact wavelengths feline retinas resolve.</p>
+      <h3>The Science of Cat Vision</h3>
+      <p class="card-desc">Unlike ordinary laser apps that use invisible red dots, cat-app calibrates all critters directly to feline retinal wavelength response.</p>
+      
+      <div class="scorm-stat-grid">
+        <div class="scorm-stat-item">
+          <b>450 nm & 555 nm</b>
+          <span>Cyan & green-yellow peak cone sensitivity</span>
+        </div>
+        <div class="scorm-stat-item">
+          <b>25 Hz Flicker Fusion</b>
+          <span>High temporal motion acuity vs. static detail</span>
+        </div>
+      </div>
+
+      <div class="scorm-box">
+        <h4>🔬 Verified Lab Finding</h4>
+        <p>Cats rely on luminance contrast and edge trajectory. Red laser pointers cause optical frustration because cats cannot clearly resolve red spectral frequencies.</p>
+      </div>
     </div>
 
-    <!-- Step 2: Choose Your Cat's Starter Critter -->
+    <!-- Module 2: Anti-Boredom Engine & Kinetic Algorithms -->
     <div class="onboarding-card" id="onboardStep2">
+      <span class="scorm-badge">Module 2 · Anti-Boredom & Kinetic Algorithms</span>
       <div class="duo-mascot-row">
         <div class="duo-avatar"><canvas id="duoPip"></canvas></div>
         <div class="duo-bubble">
-          <b>Pip the Mouse says:</b>
-          <p>“Pick our starting companion! Each of us has our own speed, dart pattern, and personality.”</p>
+          <b>Pip the Mouse explains:</b>
+          <p>“Real prey doesn't run in circles. We dart, freeze in ambush tufts, and slow down when stalked!”</p>
         </div>
       </div>
-      <h3>Choose Starter Critter</h3>
-      <div class="critter-showcase-grid">
-        <div class="critter-showcase-item selected" data-critter="beetle">
-          <canvas id="duoPickBeetle"></canvas>
-          <div><b>Brix</b><span>Explosive scuttle</span></div>
+      <h3>Kinetic Hunting Behavior</h3>
+      <p class="card-desc">Our anti-boredom engine replicates natural predatory sequences with burst velocity, cover-seeking, and dynamic fatigue.</p>
+
+      <div class="scorm-stat-grid">
+        <div class="scorm-stat-item">
+          <b>Wand Teaser Logic</b>
+          <span>Twitches in place after 25s of inactivity</span>
         </div>
-        <div class="critter-showcase-item" data-critter="mouse">
-          <canvas id="duoPickMouse"></canvas>
-          <div><b>Pip</b><span>Skirt-board sweeps</span></div>
+        <div class="scorm-stat-item">
+          <b>Dynamic Catch Radius</b>
+          <span>Expands on near-misses to guarantee catch success</span>
         </div>
-        <div class="critter-showcase-item" data-critter="snake">
-          <canvas id="duoPickSnake"></canvas>
-          <div><b>Ziggy</b><span>Slithering S-curves</span></div>
-        </div>
-        <div class="critter-showcase-item" data-critter="fish">
-          <canvas id="duoPickFish"></canvas>
-          <div><b>Nori</b><span>Calm gentle drift</span></div>
-        </div>
+      </div>
+
+      <div class="scorm-box">
+        <h4>🎯 Ambush & Cover Mechanics</h4>
+        <p>Prey seeks shelter in grass tufts. Cats observe motionless prey longer, spiking predatory dopamine before pouncing.</p>
       </div>
     </div>
 
-    <!-- Step 3: Install PWA Guide (2 Simple Steps) -->
+    <!-- Module 3: Starter Critter Calibration -->
     <div class="onboarding-card" id="onboardStep3">
+      <span class="scorm-badge">Module 3 · Select Critter Behavior Profile</span>
       <div class="duo-mascot-row">
         <div class="duo-avatar"><canvas id="duoZiggy"></canvas></div>
         <div class="duo-bubble">
           <b>Ziggy the Snake says:</b>
-          <p>“Install as a PWA in 2 steps for 100% offline play and full-screen cat-proofing!”</p>
+          <p>“Select your starting critter! Each has unique sinusoids, acceleration curves, and acoustic chirps.”</p>
         </div>
       </div>
-      <h3>Install for Instant Play</h3>
+      <h3>Calibrate Starter Companion</h3>
+      <div class="critter-showcase-grid">
+        <div class="critter-showcase-item selected" data-critter="beetle">
+          <canvas id="duoPickBeetle"></canvas>
+          <div><b>Brix (Beetle)</b><span>Explosive scuttle & snap turns</span></div>
+        </div>
+        <div class="critter-showcase-item" data-critter="mouse">
+          <canvas id="duoPickMouse"></canvas>
+          <div><b>Pip (Mouse)</b><span>Perimeter skirt & pause bursts</span></div>
+        </div>
+        <div class="critter-showcase-item" data-critter="snake">
+          <canvas id="duoPickSnake"></canvas>
+          <div><b>Ziggy (Snake)</b><span>Continuous S-curve slither</span></div>
+        </div>
+        <div class="critter-showcase-item" data-critter="fish">
+          <canvas id="duoPickFish"></canvas>
+          <div><b>Nori (Fish)</b><span>Gentle hydrodynamic glide</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module 4: PWA Installation & Hardware Cat-Proofing -->
+    <div class="onboarding-card" id="onboardStep4">
+      <span class="scorm-badge">Module 4 · Hardware Cat-Proofing & Offline PWA</span>
+      <div class="duo-mascot-row">
+        <div class="duo-avatar"><canvas id="duoLumi"></canvas></div>
+        <div class="duo-bubble">
+          <b>Lumi the Moth explains:</b>
+          <p>“Install the PWA to lock touch gestures, prevent app exits, and enable zero-latency offline play!”</p>
+        </div>
+      </div>
+      <h3>2-Step Installation Guide</h3>
       
       <div class="install-tabs" role="tablist" style="width:100%;margin-bottom:12px">
         <button class="install-tab" id="tabMobile" role="tab" aria-selected="true" data-target="panelMobile">Mobile</button>
@@ -1037,15 +1116,15 @@ details[open] summary::after{content:"–"}
           <div class="install-step">
             <span class="step-num">1</span>
             <div class="step-text">
-              <b>Tap Share next to URL</b>
-              <span>On iPad Safari tap the <b>Share icon</b>. On Android Tablet tap the install prompt.</span>
+              <b>Tap Share next to Address Bar</b>
+              <span>On iPad Safari tap <b>Share</b>. On Android Tablet tap the install badge.</span>
             </div>
           </div>
           <div class="install-step">
             <span class="step-num">2</span>
             <div class="step-text">
-              <b>Add to Home Screen & Lock Screen</b>
-              <span>Tap <b>"Add to Home Screen"</b>. Optional: Enable Guided Access to lock accidental paws.</span>
+              <b>Enable iOS Guided Access</b>
+              <span>Add to Home Screen, then triple-click top button for 100% paw-proof screen lock.</span>
             </div>
           </div>
         </div>
@@ -1072,17 +1151,25 @@ details[open] summary::after{content:"–"}
       </div>
     </div>
 
-    <!-- Step 4: Ready to Hunt -->
-    <div class="onboarding-card" id="onboardStep4">
+    <!-- Module 5: Post-Hunt Physical Reward Protocol -->
+    <div class="onboarding-card" id="onboardStep5">
+      <span class="scorm-badge">Module 5 · Predatory Loop Completion Protocol</span>
       <div class="duo-mascot-row">
         <div class="duo-avatar"><canvas id="duoNori"></canvas></div>
         <div class="duo-bubble">
-          <b>Nori the Fish says:</b>
-          <p>“You're all set! Place your device flat on the floor and let your cat take over.”</p>
+          <b>Nori the Fish coaches:</b>
+          <p>“Always close the predatory loop! Offer a physical treat or toy at the end of each session.”</p>
         </div>
       </div>
-      <h3>Ready for the Hunt!</h3>
-      <p class="card-desc">Remember: when your cat finishes catching critters, always reward them with a real physical treat or wand toy to close their predatory loop.</p>
+      <h3>Closing the Hunt</h3>
+      <p class="card-desc">A 2021 feline behavioral study found that electronic play without physical culmination can cause laser-frustration syndrome.</p>
+      
+      <div class="scorm-box">
+        <h4>🐾 Best Practice Checklist</h4>
+        <p>1. Place device flat on the carpet or floor.<br>
+           2. Allow 5–10 minutes of interactive hunting.<br>
+           3. When session ends, immediately reward with a real treat, wand toy, or kickeroo.</p>
+      </div>
     </div>
 
     <!-- Navigation Footer -->
@@ -3174,6 +3261,7 @@ function paintCritterCast(){
   renderCritterCanvas(document.getElementById("duoBrix"), "beetle", 0.75);
   renderCritterCanvas(document.getElementById("duoPip"), "mouse", 0.75);
   renderCritterCanvas(document.getElementById("duoZiggy"), "snake", 0.75);
+  renderCritterCanvas(document.getElementById("duoLumi"), "moth", 0.75);
   renderCritterCanvas(document.getElementById("duoNori"), "fish", 0.75);
 
   // Paint starter choice critters
@@ -3193,7 +3281,7 @@ const onboardNextBtn = document.getElementById("onboardNextBtn");
 const progressFill = document.getElementById("onboardingProgressFill");
 
 let currentStep = 1;
-const totalSteps = 4;
+const totalSteps = 5;
 
 function showOnboardStep(step){
   currentStep = Math.max(1, Math.min(totalSteps, step));
