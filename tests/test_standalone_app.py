@@ -87,7 +87,7 @@ class TestQuarryStandaloneApp(unittest.TestCase):
     def test_service_worker_offline(self):
         with open('Quarry/www/sw.js', 'r', encoding='utf-8') as f:
             sw = f.read()
-        self.assertIn("CACHE_NAME = 'cat-app-v14'", sw)
+        self.assertIn("CACHE_NAME = 'cat-app-v15'", sw)
         self.assertIn('cache.add(url)', sw)
         self.assertNotIn('cache.addAll', sw)
         self.assertIn("request.mode === 'navigate'", sw)

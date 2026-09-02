@@ -52,6 +52,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Visual filter** setting (Underwater / Thermal / Dream), layered over the live field via new SVG filters (`#underwater`, `#thermal`, `#dream`) — separate from the existing Cat vision toggle, which stays a dedicated simulation of feline colour perception.
 - Debris now drifts continuously on its own for every backdrop but Den, rather than only reacting to a paw.
 
+## [2.2.0] - 2026-09-01
+
+### Fixed
+- Fixed cross-domain Firebase Auth redirect issue by reverse proxying `/__/auth/` in `nginx.conf` and setting `authDomain: location.host` on deployed environments, ensuring Google SSO handlers and redirect callbacks stay 100% on `cat-app-zk4so6dwua-uc.a.run.app` without touching `iron-hope-shop-ff854.web.app`.
+- Bumped Service Worker cache to `cat-app-v15`.
+
 ## [2.1.0] - 2026-09-01
 
 ### Fixed
