@@ -14,6 +14,7 @@ env:
   REPOSITORY: cat-app-repo
   SERVICE: cat-app
   REGION: us-central1
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE20: false
 
 jobs:
   test:

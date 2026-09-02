@@ -127,6 +127,88 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
     text-transform:uppercase;
     line-height:1.4;
   }
+  .auth-bar{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:10px;
+    font-size:12.5px;
+    color:var(--muted);
+  }
+  .auth-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:5px 11px;
+    border-radius:16px;
+    font-size:12px;
+    font-weight:600;
+    background:var(--slate);
+    color:var(--bone);
+    border:1px solid var(--line);
+    cursor:pointer;
+    touch-action:manipulation;
+    transition:background .15s, border-color .15s;
+  }
+  .auth-btn:active{background:var(--slate-hi)}
+  .auth-btn svg{width:13px;height:13px;flex:none}
+  .auth-user{
+    display:none;
+    align-items:center;
+    gap:6px;
+  }
+  .auth-avatar{
+    width:20px;height:20px;border-radius:50%;
+    background:var(--wheat);
+    display:inline-block;
+  }
+  .auth-signout{
+    background:none;border:none;color:var(--muted);
+    font-size:11.5px;text-decoration:underline;cursor:pointer;padding:0 4px;
+  }
+  .auth-signout:hover{color:var(--wheat)}
+  .auth-modal{
+    display:none;
+    position:fixed;top:0;left:0;right:0;bottom:0;
+    background:rgba(8,12,16,0.85);backdrop-filter:blur(6px);
+    z-index:9999;align-items:center;justify-content:center;
+    padding:20px;
+  }
+  .auth-modal.open{display:flex}
+  .auth-dialog{
+    background:var(--slate);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:26px 22px 20px;
+    max-width:340px;width:100%;
+    box-shadow:0 16px 36px rgba(0,0,0,0.6);
+  }
+  .auth-dialog h3{
+    font-family:var(--display);
+    font-size:20px;
+    color:var(--bone);
+    margin-bottom:6px;
+  }
+  .auth-dialog p{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.4}
+  .auth-input{
+    width:100%;box-sizing:border-box;
+    padding:10px 12px;border-radius:8px;
+    background:var(--field);border:1px solid var(--line);
+    color:var(--bone);font-size:14px;margin-bottom:10px;
+  }
+  .auth-input:focus{outline:none;border-color:var(--wheat)}
+  .auth-actions{display:flex;gap:8px;margin-top:6px}
+  .auth-submit{
+    flex:1;background:var(--wheat);color:#141a10;
+    font-size:14px;font-weight:600;padding:10px;
+    border-radius:8px;border:none;cursor:pointer;
+  }
+  .auth-cancel{
+    background:var(--slate-hi);color:var(--bone);
+    font-size:13px;padding:10px 14px;
+    border-radius:8px;border:none;cursor:pointer;
+  }
+  .auth-status{font-size:12px;color:#cf9090;margin-top:8px;min-height:16px}
   .done-foot{
     margin-top:20px;
     font-size:13px;
@@ -434,8 +516,20 @@ details[open] summary::after{content:"–"}
 <main id="home" class="screen on">
   <div class="home-app">
     <div class="home-primary">
-      <h1 class="wordmark">cat-app <span class="build-tag">v1.6.0</span></h1>
+      <h1 class="wordmark">cat-app <span class="build-tag">v1.8.0</span></h1>
       <p class="standfirst">A hunting game drawn for the way cats actually see.</p>
+      <div class="auth-bar" id="authBar">
+        <button class="auth-btn" id="googleLoginBtn" aria-label="Sign in with Google">
+          <svg viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/><path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15s.7 5.3 1.9 7.7l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/></svg>
+          Google SSO
+        </button>
+        <button class="auth-btn" id="emailLoginBtn" aria-label="Sign in with Email">Email</button>
+        <span class="auth-user" id="authUser">
+          <span class="auth-avatar" id="authAvatar"></span>
+          <span id="authName"></span>
+          <button class="auth-signout" id="authSignout">Sign out</button>
+        </span>
+      </div>
       <p class="deck">Prey that flees instead of charging, in the two colours a cat's eye can tell apart, moving at the stop-start rhythm that triggers a pounce. Set it on a tablet on the floor and let them work.</p>
 
       <div class="window">
@@ -631,8 +725,25 @@ details[open] summary::after{content:"–"}
     <button class="btn-1" id="again">Run it again</button>
     <button class="btn-2" id="home-btn">Change the setup</button>
   </div>
-  <div class="done-foot">cat-app <span class="build-tag">v1.6.0</span></div>
+  <div class="done-foot">cat-app <span class="build-tag">v1.8.0</span></div>
 </section>
+
+<!-- ============ AUTH MODAL ============ -->
+<div class="auth-modal" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <div class="auth-dialog">
+    <h3 id="authTitle">Sign in with Email</h3>
+    <p>Save and sync your cat's hunting stats across all your devices.</p>
+    <form id="authForm">
+      <input class="auth-input" type="email" id="authEmail" placeholder="you@example.com" required autocomplete="email" />
+      <input class="auth-input" type="password" id="authPassword" placeholder="Password (min 6 chars)" minlength="6" required autocomplete="current-password" />
+      <div class="auth-actions">
+        <button class="auth-submit" type="submit" id="authSubmit">Sign in / Register</button>
+        <button class="auth-cancel" type="button" id="authCancel">Cancel</button>
+      </div>
+      <div class="auth-status" id="authStatus"></div>
+    </form>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -2482,6 +2593,128 @@ if ('serviceWorker' in navigator && (location.protocol === 'http:' || location.p
   }).catch(function(err){
     reportError("SW", err);
   });
+}
+
+/* ================= Firebase SSO & Auth Setup ================= */
+const FIREBASE_CONFIG = window.FIREBASE_CONFIG || {
+  apiKey: "",
+  authDomain: "iron-hope-shop-ff854.firebaseapp.com",
+  projectId: "iron-hope-shop-ff854",
+  storageBucket: "iron-hope-shop-ff854.firebasestorage.app",
+  messagingSenderId: "",
+  appId: ""
+};
+
+let fbAuth = null, fbProvider = null;
+function initFirebase(){
+  try{
+    if(window.firebase && window.firebase.initializeApp){
+      if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+      fbAuth = firebase.auth();
+      fbProvider = new firebase.auth.GoogleAuthProvider();
+      fbAuth.onAuthStateChanged(user => updateAuthUI(user));
+    }
+  }catch(e){
+    console.warn("Firebase init:", e);
+  }
+}
+
+function updateAuthUI(user){
+  const userEl = document.getElementById("authUser");
+  const gBtn = document.getElementById("googleLoginBtn");
+  const eBtn = document.getElementById("emailLoginBtn");
+  const nameEl = document.getElementById("authName");
+  const avatarEl = document.getElementById("authAvatar");
+  if(user){
+    gBtn.style.display = "none";
+    eBtn.style.display = "none";
+    userEl.style.display = "inline-flex";
+    nameEl.textContent = user.displayName || user.email.split('@')[0];
+    if(user.photoURL){
+      avatarEl.style.backgroundImage = 'url('+user.photoURL+')';
+      avatarEl.style.backgroundSize = 'cover';
+    } else {
+      avatarEl.style.background = 'var(--wheat)';
+    }
+  } else {
+    gBtn.style.display = "inline-flex";
+    eBtn.style.display = "inline-flex";
+    userEl.style.display = "none";
+  }
+}
+
+// Wire Auth Buttons
+const authModal = document.getElementById("authModal");
+const authForm = document.getElementById("authForm");
+const authStatus = document.getElementById("authStatus");
+
+document.getElementById("googleLoginBtn").addEventListener("click", () => {
+  if(!fbAuth){
+    alert("Firebase Auth: Please set your Firebase Web App apiKey in the configuration.");
+    return;
+  }
+  fbAuth.signInWithPopup(fbProvider).catch(err => {
+    if(err.code === "auth/popup-blocked" || err.code === "auth/popup-closed-by-user"){
+      fbAuth.signInWithRedirect(fbProvider).catch(e => alert(e.message));
+    } else {
+      alert("Google Sign-in: " + err.message);
+    }
+  });
+});
+
+document.getElementById("emailLoginBtn").addEventListener("click", () => {
+  authStatus.textContent = "";
+  authModal.classList.add("open");
+});
+
+document.getElementById("authCancel").addEventListener("click", () => {
+  authModal.classList.remove("open");
+});
+
+document.getElementById("authSignout").addEventListener("click", () => {
+  if(fbAuth) fbAuth.signOut();
+});
+
+authForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const email = document.getElementById("authEmail").value.trim();
+  const pass = document.getElementById("authPassword").value;
+  if(!fbAuth){
+    authStatus.textContent = "Firebase is not configured with apiKey yet.";
+    return;
+  }
+  authStatus.style.color = "var(--wheat)";
+  authStatus.textContent = "Signing in...";
+  fbAuth.signInWithEmailAndPassword(email, pass)
+    .then(() => { authModal.classList.remove("open"); })
+    .catch(err => {
+      if(err.code === "auth/user-not-found" || err.code === "auth/invalid-credential"){
+        // Automatically attempt registration if user does not exist
+        authStatus.textContent = "Creating new account...";
+        fbAuth.createUserWithEmailAndPassword(email, pass)
+          .then(() => { authModal.classList.remove("open"); })
+          .catch(regErr => {
+            authStatus.style.color = "#cf9090";
+            authStatus.textContent = regErr.message;
+          });
+      } else {
+        authStatus.style.color = "#cf9090";
+        authStatus.textContent = err.message;
+      }
+    });
+});
+
+// Load Firebase SDK non-blockingly (preserves 100% offline gameplay)
+if(navigator.onLine && (location.protocol === "http:" || location.protocol === "https:")){
+  const s1 = document.createElement("script");
+  s1.src = "https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js";
+  s1.onload = () => {
+    const s2 = document.createElement("script");
+    s2.src = "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js";
+    s2.onload = () => initFirebase();
+    document.head.appendChild(s2);
+  };
+  document.head.appendChild(s1);
 }
 
 selectKind("beetle");

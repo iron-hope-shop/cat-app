@@ -52,6 +52,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Visual filter** setting (Underwater / Thermal / Dream), layered over the live field via new SVG filters (`#underwater`, `#thermal`, `#dream`) — separate from the existing Cat vision toggle, which stays a dedicated simulation of feline colour perception.
 - Debris now drifts continuously on its own for every backdrop but Den, rather than only reacting to a paw.
 
+## [1.8.0] - 2026-09-01
+
+### Added
+- Firebase Google SSO and Email/Password authentication support with custom UI (`.auth-bar`, `#authModal`, and user profile indicators).
+- Non-blocking asynchronous Firebase SDK loader preserving 100% offline standalone PWA and iPad game capabilities.
+- Resolved GitHub Actions Node.js 20 deprecation warning via environment configuration.
+
 ## [1.7.1] - 2026-09-01
 
 ### Fixed
