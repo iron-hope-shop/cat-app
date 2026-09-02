@@ -52,6 +52,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Visual filter** setting (Underwater / Thermal / Dream), layered over the live field via new SVG filters (`#underwater`, `#thermal`, `#dream`) — separate from the existing Cat vision toggle, which stays a dedicated simulation of feline colour perception.
 - Debris now drifts continuously on its own for every backdrop but Den, rather than only reacting to a paw.
 
+## [2.1.0] - 2026-09-01
+
+### Fixed
+- Fixed Google SSO flow by using in-app popups and handling `getRedirectResult()` without full-page OAuth origin redirects.
+- Bumped Service Worker cache to `cat-app-v14`.
+
+## [2.0.0] - 2026-09-01
+
+### Added
+- Illustrated Critter Splash Screen (`#splashScreen`) introducing named characters: **Brix** (Beetle), **Pip** (Mouse), **Ziggy** (Snake), and **Nori** (Fish).
+- Step-by-step PWA Onboarding Guide modal (`#onboardingModal`) with simple 2-step setup directions categorized for **Mobile**, **Tablet**, and **Workstation**.
+- Top bar quick-action button `Install PWA` to reopen installation instructions at any time.
+- Dynamic character pill roster showcasing the full critter cast (**Lumi**, **Dart**, **Nova**, **Hoppy**, etc.).
+- Bumped Service Worker cache to `cat-app-v13`.
+
 ## [1.12.0] - 2026-09-01
 
 ### Changed

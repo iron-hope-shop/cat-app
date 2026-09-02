@@ -78,11 +78,16 @@ class TestQuarryStandaloneApp(unittest.TestCase):
             self.assertIn('authGate', content)
             self.assertIn('AIzaSyCAB2x8toj3IHlfHCSEEglVx9pJdZMU9QE', content)
             self.assertIn('data-min="0"', content)
+            self.assertIn('splashScreen', content)
+            self.assertIn('onboardingModal', content)
+            self.assertIn('tabMobile', content)
+            self.assertIn('tabTablet', content)
+            self.assertIn('tabWorkstation', content)
 
     def test_service_worker_offline(self):
         with open('Quarry/www/sw.js', 'r', encoding='utf-8') as f:
             sw = f.read()
-        self.assertIn("CACHE_NAME = 'cat-app-v12'", sw)
+        self.assertIn("CACHE_NAME = 'cat-app-v14'", sw)
         self.assertIn('cache.add(url)', sw)
         self.assertNotIn('cache.addAll', sw)
         self.assertIn("request.mode === 'navigate'", sw)

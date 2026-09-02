@@ -241,12 +241,142 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
     margin-top:10px;min-height:16px;
     line-height:1.35;
   }
-  .done-foot{
-    margin-top:20px;
-    font-size:13px;
-    color:var(--muted);
-    text-align:center;
+  /* Splash & Onboarding Modal / Kiosk Presentation */
+  .splash-screen{
+    position:fixed;inset:0;
+    background:radial-gradient(circle at center, #18222c 0%, #080c10 100%);
+    z-index:999999;
+    display:flex;align-items:center;justify-content:center;
+    flex-direction:column;
+    padding:24px;text-align:center;
+    transition:opacity .4s ease, visibility .4s ease;
   }
+  .splash-screen.hidden{
+    opacity:0;visibility:hidden;pointer-events:none;
+  }
+  .splash-critters{
+    display:flex;align-items:center;justify-content:center;
+    gap:18px;margin-bottom:20px;
+  }
+  .splash-critter-card{
+    display:flex;flex-direction:column;align-items:center;
+    background:var(--slate);border:1px solid var(--line);
+    border-radius:14px;padding:10px 14px 8px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.5);
+  }
+  .splash-critter-card canvas{width:48px;height:48px;display:block}
+  .splash-critter-name{font-size:12px;font-weight:600;color:var(--wheat);margin-top:4px}
+  .splash-critter-spec{font-size:10.5px;color:var(--muted)}
+  .splash-title{
+    font-family:var(--display);font-size:clamp(32px,7vw,48px);
+    font-weight:600;color:var(--wheat);line-height:1.1;margin-bottom:8px;
+  }
+  .splash-sub{
+    color:var(--bone);font-size:clamp(14px,3.5vw,16.5px);
+    max-width:44ch;line-height:1.45;margin-bottom:24px;
+  }
+  .splash-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+  .splash-btn-primary{
+    background:var(--wheat);color:#141a10;
+    font-size:15px;font-weight:600;
+    padding:13px 26px;border-radius:12px;border:none;cursor:pointer;
+    box-shadow:0 4px 18px rgba(240,222,107,0.25);
+    touch-action:manipulation;
+  }
+  .splash-btn-secondary{
+    background:var(--slate);color:var(--bone);
+    font-size:14.5px;font-weight:500;
+    padding:13px 22px;border-radius:12px;
+    border:1px solid var(--line);cursor:pointer;
+    touch-action:manipulation;
+  }
+  .splash-btn-secondary:active, .splash-btn-primary:active{transform:scale(.98)}
+
+  /* Onboarding Guide Modal */
+  .onboarding-modal{
+    position:fixed;inset:0;
+    background:rgba(8,12,16,0.92);backdrop-filter:blur(10px);
+    z-index:999998;
+    display:none;align-items:center;justify-content:center;
+    padding:20px;box-sizing:border-box;
+  }
+  .onboarding-modal.open{display:flex}
+  .onboarding-dialog{
+    background:var(--slate);border:1px solid var(--line);
+    border-radius:20px;max-width:540px;width:100%;max-height:90dvh;
+    display:flex;flex-direction:column;overflow:hidden;
+    box-shadow:0 24px 64px rgba(0,0,0,0.8);
+  }
+  .onboarding-head{
+    padding:20px 22px 14px;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .onboarding-head h3{
+    font-family:var(--display);font-size:22px;color:var(--bone);
+  }
+  .onboarding-close{
+    background:none;border:none;color:var(--muted);
+    font-size:24px;line-height:1;cursor:pointer;padding:0 6px;
+  }
+  .onboarding-close:hover{color:var(--wheat)}
+  .onboarding-body{
+    padding:18px 22px;overflow-y:auto;flex:1;
+  }
+  .install-tabs{
+    display:flex;gap:6px;background:var(--field);
+    padding:4px;border-radius:10px;margin-bottom:18px;
+  }
+  .install-tab{
+    flex:1;background:none;border:none;color:var(--muted);
+    padding:8px;border-radius:7px;font-size:13px;font-weight:500;
+    cursor:pointer;touch-action:manipulation;
+  }
+  .install-tab[aria-selected="true"]{
+    background:var(--slate-hi);color:var(--wheat);font-weight:600;
+  }
+  .install-panel{display:none}
+  .install-panel.active{display:block}
+  .install-step-list{
+    display:flex;flex-direction:column;gap:14px;margin-bottom:16px;
+  }
+  .install-step{
+    display:flex;gap:12px;align-items:flex-start;
+    background:var(--field);padding:12px 14px;border-radius:11px;
+    border:1px solid var(--line);
+  }
+  .step-num{
+    width:24px;height:24px;border-radius:50%;
+    background:var(--wheat);color:#141a10;
+    font-size:13px;font-weight:700;display:flex;
+    align-items:center;justify-content:center;flex:none;margin-top:1px;
+  }
+  .step-text b{color:var(--bone);font-size:13.5px;display:block;margin-bottom:2px}
+  .step-text span{color:var(--muted);font-size:12.5px;line-height:1.4;display:block}
+  .onboarding-critters-intro{
+    border-top:1px solid var(--line);padding-top:16px;margin-top:10px;
+  }
+  .onboarding-critters-intro h4{
+    font-size:14px;color:var(--bone);margin-bottom:10px;font-weight:600;
+  }
+  .critter-pills{
+    display:grid;grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));
+    gap:8px;
+  }
+  .critter-pill{
+    display:flex;align-items:center;gap:8px;
+    background:var(--field);padding:6px 10px;border-radius:8px;
+    border:1px solid var(--line);
+  }
+  .critter-pill canvas{width:28px;height:28px;flex:none}
+  .critter-pill-info b{color:var(--wheat);font-size:12px;display:block}
+  .critter-pill-info span{color:var(--muted);font-size:10.5px;display:block}
+  .onboarding-open-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    background:var(--slate);color:var(--wheat);border:1px solid var(--line);
+    padding:5px 12px;border-radius:18px;font-size:12px;font-weight:600;
+    cursor:pointer;touch-action:manipulation;transition:background .15s;
+  }
+  .onboarding-open-btn:active{background:var(--slate-hi)}
   body.cv #preview, body.cv .chip canvas{filter:url(#catvision)}
 body.filt-underwater #preview, body.filt-underwater .chip canvas, body.filt-underwater #field{
   filter: hue-rotate(165deg) saturate(1.5) contrast(1.12) brightness(0.95);
@@ -558,6 +688,10 @@ details[open] summary::after{content:"–"}
       <h1 class="wordmark">cat-app <span class="build-tag">v1.9.0</span></h1>
       <p class="standfirst">A hunting game drawn for the way cats actually see.</p>
       <div class="auth-bar" id="authBar">
+        <button class="onboarding-open-btn" id="openOnboardingBtn" type="button" aria-label="Open PWA installation guide">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v14M5 9l7 7 7-7M2 19h20"/></svg>
+          Install PWA
+        </button>
         <span class="auth-user" id="authUser">
           <span class="auth-avatar" id="authAvatar"></span>
           <span id="authName"></span>
@@ -763,7 +897,129 @@ details[open] summary::after{content:"–"}
   <div class="done-foot">cat-app <span class="build-tag">v1.9.0</span></div>
 </section>
 
-<!-- ============ AUTH GATE (MANDATORY LOGIN) ============ -->
+<!-- ============ SPLASH SCREEN ============ -->
+<div class="splash-screen" id="splashScreen">
+  <div class="splash-critters" id="splashCritters">
+    <div class="splash-critter-card">
+      <canvas id="splashBrix"></canvas>
+      <span class="splash-critter-name">Brix</span>
+      <span class="splash-critter-spec">Beetle</span>
+    </div>
+    <div class="splash-critter-card">
+      <canvas id="splashPip"></canvas>
+      <span class="splash-critter-name">Pip</span>
+      <span class="splash-critter-spec">Mouse</span>
+    </div>
+    <div class="splash-critter-card">
+      <canvas id="splashZiggy"></canvas>
+      <span class="splash-critter-name">Ziggy</span>
+      <span class="splash-critter-spec">Snake</span>
+    </div>
+    <div class="splash-critter-card">
+      <canvas id="splashNori"></canvas>
+      <span class="splash-critter-name">Nori</span>
+      <span class="splash-critter-spec">Fish</span>
+    </div>
+  </div>
+  <h1 class="splash-title">cat-app <span class="build-tag">v2.0.0</span></h1>
+  <p class="splash-sub">A feline hunting playground engineered specifically for cat dichromatic vision and natural predatory rhythms.</p>
+  <div class="splash-actions">
+    <button class="splash-btn-primary" id="splashEnterBtn">Enter Game Arena</button>
+    <button class="splash-btn-secondary" id="splashInstallBtn">How to Install PWA</button>
+  </div>
+</div>
+
+<!-- ============ ONBOARDING & PWA INSTALL GUIDE MODAL ============ -->
+<div class="onboarding-modal" id="onboardingModal" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
+  <div class="onboarding-dialog">
+    <div class="onboarding-head">
+      <h3 id="onboardingTitle">How to Install cat-app PWA</h3>
+      <button class="onboarding-close" id="onboardingCloseBtn" aria-label="Close guide">&times;</button>
+    </div>
+    <div class="onboarding-body">
+      <div class="install-tabs" role="tablist">
+        <button class="install-tab" id="tabMobile" role="tab" aria-selected="true" data-target="panelMobile">Mobile (iOS & Android)</button>
+        <button class="install-tab" id="tabTablet" role="tab" aria-selected="false" data-target="panelTablet">Tablet (iPad & Android)</button>
+        <button class="install-tab" id="tabWorkstation" role="tab" aria-selected="false" data-target="panelWorkstation">Workstation (Mac / PC)</button>
+      </div>
+
+      <!-- Mobile Panel -->
+      <div class="install-panel active" id="panelMobile" role="tabpanel">
+        <div class="install-step-list">
+          <div class="install-step">
+            <span class="step-num">1</span>
+            <div class="step-text">
+              <b>Open in Browser & Tap Share</b>
+              <span>On iOS Safari, tap the <b>Share icon</b> at the bottom. On Android Chrome, tap the <b>three-dot menu</b> in the top-right.</span>
+            </div>
+          </div>
+          <div class="install-step">
+            <span class="step-num">2</span>
+            <div class="step-text">
+              <b>Add to Home Screen</b>
+              <span>Select <b>"Add to Home Screen"</b> or <b>"Install App"</b>. cat-app will install as an offline, full-screen app.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tablet Panel -->
+      <div class="install-panel" id="panelTablet" role="tabpanel">
+        <div class="install-step-list">
+          <div class="install-step">
+            <span class="step-num">1</span>
+            <div class="step-text">
+              <b>Tap Share / Install Icon</b>
+              <span>On iPad Safari, tap the <b>Share button</b> next to the URL address bar. On Android Tablet, tap the install badge.</span>
+            </div>
+          </div>
+          <div class="install-step">
+            <span class="step-num">2</span>
+            <div class="step-text">
+              <b>Add to Home Screen & Enable Guided Access</b>
+              <span>Tap <b>"Add to Home Screen"</b>. Optional: Enable iOS Guided Access (triple-click top button) for 100% cat-proof paw locking.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Workstation Panel -->
+      <div class="install-panel" id="panelWorkstation" role="tabpanel">
+        <div class="install-step-list">
+          <div class="install-step">
+            <span class="step-num">1</span>
+            <div class="step-text">
+              <b>Click the Install App Icon</b>
+              <span>In Chrome, Edge, or Brave, click the <b>Install App icon (computer with down arrow)</b> on the right side of the URL bar.</span>
+            </div>
+          </div>
+          <div class="install-step">
+            <span class="step-num">2</span>
+            <div class="step-text">
+              <b>Confirm Installation</b>
+              <span>Click <b>Install</b>. The app opens instantly in its own standalone desktop window with offline caching.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cast of Critters with Names -->
+      <div class="onboarding-critters-intro">
+        <h4>Meet the Critters</h4>
+        <div class="critter-pills" id="onboardingCrittersList">
+          <div class="critter-pill"><canvas id="pillBrix"></canvas><div class="critter-pill-info"><b>Brix</b><span>Beetle</span></div></div>
+          <div class="critter-pill"><canvas id="pillPip"></canvas><div class="critter-pill-info"><b>Pip</b><span>Mouse</span></div></div>
+          <div class="critter-pill"><canvas id="pillZiggy"></canvas><div class="critter-pill-info"><b>Ziggy</b><span>Snake</span></div></div>
+          <div class="critter-pill"><canvas id="pillNori"></canvas><div class="critter-pill-info"><b>Nori</b><span>Fish</span></div></div>
+          <div class="critter-pill"><canvas id="pillLumi"></canvas><div class="critter-pill-info"><b>Lumi</b><span>Moth</span></div></div>
+          <div class="critter-pill"><canvas id="pillDart"></canvas><div class="critter-pill-info"><b>Dart</b><span>Lizard</span></div></div>
+          <div class="critter-pill"><canvas id="pillNova"></canvas><div class="critter-pill-info"><b>Nova</b><span>Laser</span></div></div>
+          <div class="critter-pill"><canvas id="pillHoppy"></canvas><div class="critter-pill-info"><b>Hoppy</b><span>Frog</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="auth-gate" id="authGate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
   <div class="auth-box">
     <div class="auth-badge">Feline Hunting Game</div>
@@ -2720,6 +2976,12 @@ function initFirebase(){
       fbAuth = firebase.auth();
       fbProvider = new firebase.auth.GoogleAuthProvider();
       fbProvider.setCustomParameters({ prompt: 'select_account' });
+      // Handle redirect sign-in result if returning to app
+      fbAuth.getRedirectResult().then(res => {
+        if(res && res.user) updateAuthUI(res.user);
+      }).catch(err => {
+        console.warn("Redirect result error:", err);
+      });
       fbAuth.onAuthStateChanged(user => updateAuthUI(user));
     }
   }catch(e){
@@ -2733,9 +2995,12 @@ document.getElementById("gateGoogleBtn").addEventListener("click", () => {
     gateAuthStatus.textContent = "Connecting to Google Auth service...";
     return;
   }
-  fbAuth.signInWithPopup(fbProvider).catch(err => {
+  // Use popup with explicit error handling and immediate user prompt
+  fbAuth.signInWithPopup(fbProvider).then(result => {
+    if(result && result.user) updateAuthUI(result.user);
+  }).catch(err => {
     if(err.code === "auth/popup-blocked" || err.code === "auth/popup-closed-by-user"){
-      fbAuth.signInWithRedirect(fbProvider).catch(e => { gateAuthStatus.textContent = e.message; });
+      gateAuthStatus.textContent = "Popup blocked or closed. Please allow popups or sign in with email.";
     } else {
       gateAuthStatus.textContent = err.message;
     }
@@ -2793,6 +3058,79 @@ if(navigator.onLine && (location.protocol === "http:" || location.protocol === "
   }, 1200);
 }
 
+/* ================= Splash, Onboarding & Critter Characters ================= */
+const CRITTER_CAST = {
+  Brix: { species: 'beetle', canvasId: 'splashBrix', pillId: 'pillBrix' },
+  Pip:  { species: 'mouse',  canvasId: 'splashPip',  pillId: 'pillPip' },
+  Ziggy:{ species: 'snake',  canvasId: 'splashZiggy',pillId: 'pillZiggy' },
+  Nori: { species: 'fish',   canvasId: 'splashNori', pillId: 'pillNori' },
+  Lumi: { species: 'moth',   pillId: 'pillLumi' },
+  Dart: { species: 'lizard', pillId: 'pillDart' },
+  Nova: { species: 'laser',  pillId: 'pillNova' },
+  Hoppy:{ species: 'frog',   pillId: 'pillHoppy' }
+};
+
+function renderCritterCanvas(canvas, spKey, sizeScale){
+  if(!canvas) return;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const w = canvas.clientWidth || 44;
+  const h = canvas.clientHeight || 44;
+  canvas.width = Math.round(w * dpr);
+  canvas.height = Math.round(h * dpr);
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.translate(w / 2, h / 2);
+  const col = (SPECIES[spKey] || EXTRA[spKey] || {color:"#f0de6b"}).color;
+  const drawFn = DRAW[spKey] || drawBeetle;
+  drawFn(ctx, Math.min(w, h) * (sizeScale || 0.65), col, 0.4, false);
+}
+
+function paintCritterCast(){
+  Object.keys(CRITTER_CAST).forEach(name => {
+    const item = CRITTER_CAST[name];
+    if(item.canvasId){
+      renderCritterCanvas(document.getElementById(item.canvasId), item.species, 0.72);
+    }
+    if(item.pillId){
+      renderCritterCanvas(document.getElementById(item.pillId), item.species, 0.65);
+    }
+  });
+}
+
+const splashScreen = document.getElementById("splashScreen");
+const splashEnterBtn = document.getElementById("splashEnterBtn");
+const splashInstallBtn = document.getElementById("splashInstallBtn");
+const onboardingModal = document.getElementById("onboardingModal");
+const onboardingCloseBtn = document.getElementById("onboardingCloseBtn");
+const openOnboardingBtn = document.getElementById("openOnboardingBtn");
+
+function closeSplash(){
+  if(splashScreen) splashScreen.classList.add("hidden");
+}
+
+if(splashEnterBtn) splashEnterBtn.addEventListener("click", closeSplash);
+if(splashInstallBtn) splashInstallBtn.addEventListener("click", () => {
+  if(onboardingModal) onboardingModal.classList.add("open");
+});
+
+if(openOnboardingBtn) openOnboardingBtn.addEventListener("click", () => {
+  if(onboardingModal) onboardingModal.classList.add("open");
+});
+if(onboardingCloseBtn) onboardingCloseBtn.addEventListener("click", () => {
+  if(onboardingModal) onboardingModal.classList.remove("open");
+});
+
+// Tab switching in Onboarding Guide
+document.querySelectorAll(".install-tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".install-tab").forEach(t => t.setAttribute("aria-selected", "false"));
+    document.querySelectorAll(".install-panel").forEach(p => p.classList.remove("active"));
+    tab.setAttribute("aria-selected", "true");
+    const target = document.getElementById(tab.dataset.target);
+    if(target) target.classList.add("active");
+  });
+});
+
 selectKind("beetle");
 setBackdrop("den");
 syncSegUI();
@@ -2800,6 +3138,7 @@ renderRecord();
 requestAnimationFrame(()=>{
   sizePreview();
   paintSpecimenChips();
+  paintCritterCast();
   requestAnimationFrame(pvLoop);
 });
 
