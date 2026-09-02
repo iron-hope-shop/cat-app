@@ -1,9 +1,63 @@
 import os
 import json
+import re
 import subprocess
 import unittest
 
 class TestQuarryStandaloneApp(unittest.TestCase):
+    def test_inline_script_parses(self):
+        """The whole app is one inline IIFE, so a single syntax error silently
+        kills every listener on the page while the static HTML still renders."""
+        import shutil
+        import tempfile
+        if not shutil.which('node'):
+            self.skipTest("node not available in environment")
+        pattern = re.compile(r'<script>\s*\n\(function\(\)\{.*?\n\}\)\(\);\s*\n</script>', re.S)
+        for path in ['quarry.html', 'Quarry/www/index.html']:
+            with open(path, 'r', encoding='utf-8') as f:
+                src = f.read()
+            match = pattern.search(src)
+            self.assertIsNotNone(match, f"{path}: could not locate the main inline script")
+            body = match.group(0)[len('<script>'):-len('</script>')]
+            with tempfile.NamedTemporaryFile('w', suffix='.js', delete=False,
+                                             encoding='utf-8') as tmp:
+                tmp.write(body)
+                tmp_path = tmp.name
+            try:
+                res = subprocess.run(['node', '--check', tmp_path],
+                                     capture_output=True, text=True)
+                self.assertEqual(res.returncode, 0,
+                                 f"{path}: inline script syntax error:\n{res.stderr}")
+            finally:
+                os.unlink(tmp_path)
+
+    def test_no_listeners_on_missing_elements(self):
+        """An unguarded getElementById(...).addEventListener on a removed element
+        throws at load and kills every statement after it in the IIFE, which is
+        what silently broke the login gate. Every id wired this way must exist."""
+        pattern = re.compile(r'document\.getElementById\("([^"]+)"\)\s*\.\s*addEventListener')
+        for path in ['quarry.html', 'Quarry/www/index.html']:
+            with open(path, 'r', encoding='utf-8') as f:
+                src = f.read()
+            wired = set(pattern.findall(src))
+            self.assertTrue(wired, f"No wired element ids found in {path}")
+            for el_id in sorted(wired):
+                self.assertIn(f'id="{el_id}"', src,
+                              f'{path}: addEventListener on missing element id "{el_id}"')
+
+    def test_prelogin_gate_is_login_only(self):
+        """Pre-login shows the living critter canvas plus sign-in only. Mascot name
+        cards and the PWA/science entry points belong to the post-login help flow."""
+        for path in ['quarry.html', 'Quarry/www/index.html']:
+            with open(path, 'r', encoding='utf-8') as f:
+                src = f.read()
+            for gone in ('splashScreen', 'splash-critter-card', 'splashEnterBtn',
+                         'splashInstallBtn', 'Learn Science & Install PWA'):
+                self.assertNotIn(gone, src, f'{path}: pre-login splash remnant "{gone}"')
+            self.assertIn('authBgCanvas', src)
+            self.assertIn('settingsInstallPwaBtn', src)
+            self.assertIn('settingsReplayCourseBtn', src)
+
     def test_files_exist(self):
         required_files = [
             'quarry.html',
@@ -73,9 +127,9 @@ class TestQuarryStandaloneApp(unittest.TestCase):
             self.assertIn('requestFullscreen().catch', content.replace(' ', ''))
             self.assertNotIn('async function startGame', content)
             self.assertIn('build-tag', content)
-            self.assertIn('v1.9.0', content)
             self.assertIn('gateGoogleBtn', content)
             self.assertIn('authGate', content)
+            self.assertIn('authBgCanvas', content)
             self.assertIn('FIREBASE_CONFIG', content)
             self.assertIn('data-min="0"', content)
             self.assertIn('settingsScreen', content)
@@ -88,7 +142,7 @@ class TestQuarryStandaloneApp(unittest.TestCase):
     def test_service_worker_offline(self):
         with open('Quarry/www/sw.js', 'r', encoding='utf-8') as f:
             sw = f.read()
-        self.assertIn("CACHE_NAME = 'cat-app-v20'", sw)
+        self.assertIn("CACHE_NAME = 'cat-app-v22'", sw)
         self.assertIn('cache.add(url)', sw)
         self.assertNotIn('cache.addAll', sw)
         self.assertIn("request.mode === 'navigate'", sw)

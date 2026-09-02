@@ -52,6 +52,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Visual filter** setting (Underwater / Thermal / Dream), layered over the live field via new SVG filters (`#underwater`, `#thermal`, `#dream`) — separate from the existing Cat vision toggle, which stays a dedicated simulation of feline colour perception.
 - Debris now drifts continuously on its own for every backdrop but Den, rather than only reacting to a paw.
 
+## [2.9.1] - 2026-09-02
+
+### Fixed
+- **App-wide breakage introduced in `fe69932`.** Two faults left the entire page inert — static HTML rendered, but no button, toggle or form did anything:
+  - `document.getElementById("authSignout").addEventListener(...)` referenced an element deleted when sign-out moved to the settings screen. The `null` dereference threw during script evaluation, aborting every statement after it in the IIFE.
+  - The pre-login critter background block was nested inside the `else` (offline) branch of the Firebase loader and left the branch unclosed, making the single inline script a hard syntax error. Nothing executed at all, so Firebase never loaded and the sign-in buttons were dead.
+- Restored the offline fallback that lifts the auth gate when there is no network.
+- Consolidated the duplicated pre-login animation loop into one `authBgFrame` driver.
+
+### Added
+- `test_inline_script_parses` — extracts the inline IIFE and runs `node --check`, so a syntax error can never ship silently again.
+- `test_no_listeners_on_missing_elements` — asserts every `getElementById(...).addEventListener` target id exists in the document.
+- `test_prelogin_gate_is_login_only` — asserts the mascot name cards and the "Learn Science & Install PWA" entry point stay out of the pre-login view.
+
+### Changed
+- Bumped Service Worker cache to `cat-app-v22`.
+
+## [2.9.0] - 2026-09-01
+
+### Changed
+- Removed redundant static critter card splash screen that blocked the login view.
+- Added a full-screen **Living Critter Canvas Simulation** behind the pre-login / authentication screen (`#authBgCanvas`):
+  - A swarm of active, dynamic critters (beetles, mice, snakes, lizards, fish, moths) dart, scatter, and scamper in the background with atmospheric floor grid styling.
+- Fixed non-responsive buttons pre-login:
+  - Users are directly presented with the interactive Google SSO and Email login gate modal with direct input/button accessibility.
+- Scaled layout responsiveness across Mobile, Tablet (iPad), and Laptop/Desktop displays.
+- Overhauled bush and cover hiding animations with realistic tucked posture and high-frequency rustling vibrations.
+- Bumped Service Worker cache to `cat-app-v21`.
+
 ## [2.8.0] - 2026-09-01
 
 ### Added

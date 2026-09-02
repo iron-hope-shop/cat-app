@@ -219,25 +219,33 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   }
   .settings-action-danger:active{background:rgba(207,144,144,0.22)}
 
-  /* Full-Screen Mandatory Auth Gate */
+  /* Full-Screen Mandatory Auth Gate with Living Critter Canvas */
   .auth-gate{
     position:fixed;top:0;left:0;right:0;bottom:0;
-    background:rgba(8,12,16,0.96);backdrop-filter:blur(12px);
-    z-index:99999;
+    background:#080c10;
+    z-index:999999;
     display:flex;align-items:center;justify-content:center;
     padding:20px;box-sizing:border-box;
+    overflow:hidden;
     transition:opacity .25s ease, visibility .25s ease;
   }
   .auth-gate.hidden{
     opacity:0;visibility:hidden;pointer-events:none;
   }
+  #authBgCanvas{
+    position:absolute;inset:0;width:100%;height:100%;
+    pointer-events:none;z-index:1;
+  }
   .auth-box{
-    background:var(--slate);
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:32px 28px 26px;
-    max-width:380px;width:100%;
-    box-shadow:0 24px 60px rgba(0,0,0,0.7);
+    position:relative;z-index:2;
+    background:rgba(26,36,48,0.92);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border:1px solid rgba(240,222,107,0.22);
+    border-radius:22px;
+    padding:34px 28px 28px;
+    max-width:400px;width:100%;
+    box-shadow:0 30px 80px rgba(0,0,0,0.85);
     text-align:center;
   }
   .auth-badge{
@@ -304,57 +312,6 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
     margin-top:10px;min-height:16px;
     line-height:1.35;
   }
-  /* Splash & Onboarding Modal / Kiosk Presentation */
-  .splash-screen{
-    position:fixed;inset:0;
-    background:radial-gradient(circle at center, #18222c 0%, #080c10 100%);
-    z-index:999999;
-    display:flex;align-items:center;justify-content:center;
-    flex-direction:column;
-    padding:24px;text-align:center;
-    transition:opacity .4s ease, visibility .4s ease;
-  }
-  .splash-screen.hidden{
-    opacity:0;visibility:hidden;pointer-events:none;
-  }
-  .splash-critters{
-    display:flex;align-items:center;justify-content:center;
-    gap:18px;margin-bottom:20px;
-  }
-  .splash-critter-card{
-    display:flex;flex-direction:column;align-items:center;
-    background:var(--slate);border:1px solid var(--line);
-    border-radius:14px;padding:10px 14px 8px;
-    box-shadow:0 8px 24px rgba(0,0,0,0.5);
-  }
-  .splash-critter-card canvas{width:48px;height:48px;display:block}
-  .splash-critter-name{font-size:12px;font-weight:600;color:var(--wheat);margin-top:4px}
-  .splash-critter-spec{font-size:10.5px;color:var(--muted)}
-  .splash-title{
-    font-family:var(--display);font-size:clamp(32px,7vw,48px);
-    font-weight:600;color:var(--wheat);line-height:1.1;margin-bottom:8px;
-  }
-  .splash-sub{
-    color:var(--bone);font-size:clamp(14px,3.5vw,16.5px);
-    max-width:44ch;line-height:1.45;margin-bottom:24px;
-  }
-  .splash-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
-  .splash-btn-primary{
-    background:var(--wheat);color:#141a10;
-    font-size:15px;font-weight:600;
-    padding:13px 26px;border-radius:12px;border:none;cursor:pointer;
-    box-shadow:0 4px 18px rgba(240,222,107,0.25);
-    touch-action:manipulation;
-  }
-  .splash-btn-secondary{
-    background:var(--slate);color:var(--bone);
-    font-size:14.5px;font-weight:500;
-    padding:13px 22px;border-radius:12px;
-    border:1px solid var(--line);cursor:pointer;
-    touch-action:manipulation;
-  }
-  .splash-btn-secondary:active, .splash-btn-primary:active{transform:scale(.98)}
-
   /* Interactive SCORM-style Onboarding Course Modal */
   .onboarding-dialog{
     background:var(--slate);border:1px solid var(--line);
@@ -558,10 +515,10 @@ body.filt-dream #preview, body.filt-dream .chip canvas, body.filt-dream #field{
 /* science disclosure */
 details{margin-top:28px;border-top:1px solid var(--line);padding-top:18px}
 
-/* ---------- iPad & Tablet: full kiosk setup fits cleanly on 1 screen ---------- */
+/* ---------- Responsive layout across Mobile, Tablet (iPad), and Laptop ---------- */
 @media (min-width: 760px) and (min-height: 560px){
   #home{
-    --pad-x: max(26px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
+    --pad-x: max(28px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
     --pad-t: max(20px, env(safe-area-inset-top, 0px));
     --pad-b: max(20px, env(safe-area-inset-bottom, 0px));
     height: 100dvh;
@@ -571,7 +528,7 @@ details{margin-top:28px;border-top:1px solid var(--line);padding-top:18px}
   }
   .home-app{
     display:grid;
-    grid-template-columns:minmax(280px,1fr) minmax(360px,1.35fr);
+    grid-template-columns:minmax(300px,1fr) minmax(380px,1.3fr);
     grid-template-rows:minmax(0,1fr) auto;
     grid-template-areas:
       "primary controls"
@@ -588,12 +545,12 @@ details{margin-top:28px;border-top:1px solid var(--line);padding-top:18px}
     overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
   }
 
-  .wordmark{font-size:clamp(36px,4.5vw,52px);line-height:1}
-  .standfirst{font-size:16px;max-width:32ch;margin-top:6px;line-height:1.3}
+  .wordmark{font-size:clamp(36px,4vw,48px);line-height:1}
+  .standfirst{font-size:15.5px;max-width:32ch;margin-top:6px;line-height:1.3}
   .deck{font-size:13px;max-width:44ch;margin-top:6px;line-height:1.35}
 
-  /* the specimen window takes whatever height is left over */
-  .window{flex:1;min-height:140px;margin-top:12px}
+  /* the specimen window takes balanced height */
+  .window{flex:1;min-height:140px;max-height:300px;margin-top:12px}
   #preview{height:100%}
   .window-note,.peek{font-size:12px}
 
@@ -619,8 +576,31 @@ details{margin-top:28px;border-top:1px solid var(--line);padding-top:18px}
   .home-extra{display:none}
 }
 
+/* Laptop / Desktop Screens: Refined widescreen balance */
+@media (min-width: 1080px){
+  #home{
+    max-width: 1240px;
+    padding-top: max(24px, env(safe-area-inset-top, 0px));
+    padding-bottom: max(24px, env(safe-area-inset-bottom, 0px));
+  }
+  .home-app{
+    grid-template-columns: minmax(360px, 1.05fr) minmax(460px, 1.4fr);
+    gap: 24px 36px;
+  }
+  .window{
+    min-height: 180px;
+    max-height: 340px;
+  }
+  .chip{
+    min-height: 60px;
+  }
+  .chip canvas{
+    height: 36px;
+  }
+}
+
 @media (min-width: 760px) and (min-height: 560px) and (orientation: portrait){
-  .window{min-height:140px}
+  .window{min-height:140px;max-height:260px}
 }
 
 /* A column this narrow can't hold a label and its switch on one line. */
@@ -793,7 +773,7 @@ details[open] summary::after{content:"–"}
 <main id="home" class="screen on">
   <div class="home-app">
     <div class="home-primary">
-      <h1 class="wordmark">cat-app <span class="build-tag">v2.8.0</span></h1>
+      <h1 class="wordmark">cat-app <span class="build-tag">v2.9.1</span></h1>
       <p class="standfirst">A hunting game drawn for the way cats actually see.</p>
       <div class="auth-bar" id="authBar">
         <button class="nav-btn-pill" id="openHelpBtn" type="button" aria-label="Open science & installation guide">
@@ -1040,7 +1020,7 @@ details[open] summary::after{content:"–"}
         <b>App Build Version</b>
         <span>Cloud Run container deployment tag.</span>
       </div>
-      <span class="build-tag" style="margin:0">v2.8.0</span>
+      <span class="build-tag" style="margin:0">v2.9.1</span>
     </div>
   </div>
 
@@ -1068,40 +1048,8 @@ details[open] summary::after{content:"–"}
     <button class="btn-1" id="again">Run it again</button>
     <button class="btn-2" id="home-btn">Change the setup</button>
   </div>
-  <div class="done-foot">cat-app <span class="build-tag">v2.8.0</span></div>
+  <div class="done-foot">cat-app <span class="build-tag">v2.9.1</span></div>
 </section>
-
-<!-- ============ SPLASH SCREEN ============ -->
-<div class="splash-screen" id="splashScreen">
-  <div class="splash-critters" id="splashCritters">
-    <div class="splash-critter-card">
-      <canvas id="splashBrix"></canvas>
-      <span class="splash-critter-name">Brix</span>
-      <span class="splash-critter-spec">Beetle</span>
-    </div>
-    <div class="splash-critter-card">
-      <canvas id="splashPip"></canvas>
-      <span class="splash-critter-name">Pip</span>
-      <span class="splash-critter-spec">Mouse</span>
-    </div>
-    <div class="splash-critter-card">
-      <canvas id="splashZiggy"></canvas>
-      <span class="splash-critter-name">Ziggy</span>
-      <span class="splash-critter-spec">Snake</span>
-    </div>
-    <div class="splash-critter-card">
-      <canvas id="splashNori"></canvas>
-      <span class="splash-critter-name">Nori</span>
-      <span class="splash-critter-spec">Fish</span>
-    </div>
-  </div>
-  <h1 class="splash-title">cat-app <span class="build-tag">v2.8.0</span></h1>
-  <p class="splash-sub">A feline hunting playground engineered specifically for cat dichromatic vision and natural predatory rhythms.</p>
-  <div class="splash-actions">
-    <button class="splash-btn-primary" id="splashEnterBtn">Enter Game Arena</button>
-    <button class="splash-btn-secondary" id="splashInstallBtn">Learn Science & Install PWA</button>
-  </div>
-</div>
 
 <!-- ============ ONBOARDING & PWA INSTALL GUIDE MODAL (SCORM-STYLE COURSE) ============ -->
 <div class="onboarding-modal" id="onboardingModal" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
@@ -1309,9 +1257,10 @@ details[open] summary::after{content:"–"}
   </div>
 </div>
 <div class="auth-gate" id="authGate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+  <canvas id="authBgCanvas"></canvas>
   <div class="auth-box">
     <div class="auth-badge">Feline Hunting Game</div>
-    <h2 class="auth-title" id="gateTitle">cat-app <span class="build-tag">v1.9.0</span></h2>
+    <h2 class="auth-title" id="gateTitle">cat-app <span class="build-tag">v2.9.1</span></h2>
     <p class="auth-desc">Sign in with Google SSO or Email to unlock feline hunting & session stats.</p>
 
     <button class="auth-google-btn" id="gateGoogleBtn" type="button" aria-label="Sign in with Google SSO">
@@ -2197,10 +2146,10 @@ function Prey(kind,W,H){
   this.set(kind,W,H);
 }
 Prey.prototype.set=function(kind,W,H){
-  this.k=kind; this.s=SPECIES[kind];
+  this.k=kind; this.s=SPECIES[kind]||EXTRA[kind]||SPECIES.beetle;
   this.W=W; this.H=H;
-  this.scale=Math.min(1.7,Math.max(.85,Math.min(W,H)/620));
-  this.size=this.s.size*this.scale*1.95;
+  this.scale=Math.min(1.20,Math.max(.68,Math.min(W,H)/840));
+  this.size=Math.round(this.s.size*this.scale*1.12);
   this.x=W*rand(.25,.75); this.y=H*rand(.25,.75);
   this.head=rand(0,6.28); this.vx=0; this.vy=0;
   this.state="pause"; this.t=rand(.3,.9); this.ph=0;
@@ -2370,15 +2319,18 @@ Prey.prototype.catchR=function(){
 Prey.prototype.draw=function(ctx){
   if(!this.alive) return;
   if(this.state==="hidden"){
-    // just enough movement at the base of the tuft to hold a cat's stare
-    const j=Math.sin(this.ph*9)*this.hide.r*.10;
-    ctx.save(); ctx.globalAlpha=.75;
-    ctx.strokeStyle=this.s.color; ctx.lineCap="round";
-    ctx.lineWidth=this.size*.11; ctx.shadowColor=this.s.color; ctx.shadowBlur=10;
-    ctx.beginPath();
-    ctx.moveTo(this.x-this.hide.r*.16, this.y+this.hide.r*.20);
-    ctx.quadraticCurveTo(this.x+j, this.y+this.hide.r*.05, this.x+this.hide.r*.20+j, this.y+this.hide.r*.18);
-    ctx.stroke(); ctx.restore();
+    if(this.hide){
+      // Critter hunkers naturally under foliage with subtle breathing/antennae twitch
+      const breath = 0.86 + Math.sin(this.ph * 7) * 0.08;
+      const twitch = (Math.sin(this.ph * 12) > 0.8) ? Math.sin(this.ph * 24) * this.size * 0.08 : 0;
+      ctx.save();
+      ctx.globalAlpha = 0.65;
+      ctx.translate(this.x + twitch, this.y + this.hide.r * 0.08);
+      ctx.rotate(this.head + Math.PI / 2);
+      ctx.scale(breath * 0.76, breath * 0.76);
+      DRAW[this.k](ctx, this.size, this.s.color, this.ph, false);
+      ctx.restore();
+    }
     return;
   }
   if(this.k==="snake" && this.trail.length>2){ drawSnakeTrail(ctx,this); return; }
@@ -2403,6 +2355,15 @@ Prey.prototype.draw=function(ctx){
     ctx.ellipse(this.x+ox,this.y+oy+this.size*.30,this.size*.34*(1-hop*.35),this.size*.12*(1-hop*.35),0,0,7);
     ctx.fill(); ctx.restore();
   }
+
+  // Soft creature drop-shadow for depth
+  ctx.save();
+  ctx.globalAlpha = 0.22;
+  ctx.fillStyle = "#000000";
+  ctx.beginPath();
+  ctx.ellipse(this.x + ox, this.y + oy + this.size * 0.25, this.size * 0.42, this.size * 0.20, this.head, 0, 7);
+  ctx.fill();
+  ctx.restore();
 
   ctx.save();
   ctx.translate(this.x+ox,this.y+oy-this.size*.52*hop);
@@ -2449,18 +2410,59 @@ function scamperSound(){
 /* ================= home preview ================= */
 const pv=document.getElementById("preview"), pvx=pv.getContext("2d");
 const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
-let pvPrey=null, pvW=0, pvH=0, pvLast=0;
+let pvPrey=null, pvW=0, pvH=0, pvLast=0, pvMotes=[];
+
+function initPvMotes(){
+  pvMotes=[];
+  const bg = BACKDROPS[backdrop] || BACKDROPS.den;
+  const colors = bg.moteColors || ["#33421f","#3d3722","#2a3a2b","#453a20"];
+  for(let i=0; i<10; i++){
+    pvMotes.push({
+      x: Math.random()*pvW, y: Math.random()*pvH,
+      vx: rand(-14, 14), vy: rand(-10, 10),
+      s: rand(3, 7), a: Math.random()*6.28, va: rand(-1.2, 1.2),
+      c: colors[i % colors.length]
+    });
+  }
+}
 
 function sizePreview(){
   const r=pv.getBoundingClientRect(), dpr=Math.min(2,devicePixelRatio||1);
   pv.width=Math.round(r.width*dpr); pv.height=Math.round(r.height*dpr);
   pvx.setTransform(dpr,0,0,dpr,0,0);
   pvW=r.width; pvH=r.height;
-  if(pvPrey){ pvPrey.W=pvW; pvPrey.H=pvH; pvPrey.x=Math.min(pvPrey.x,pvW-20); pvPrey.y=Math.min(pvPrey.y,pvH-20); }
+  initPvMotes();
+  if(pvPrey){
+    pvPrey.W=pvW; pvPrey.H=pvH;
+    pvPrey.scale=Math.min(1.15,Math.max(.68,Math.min(pvW,pvH)/380));
+    pvPrey.size=Math.round((pvPrey.s.size||30)*pvPrey.scale*1.08);
+    pvPrey.x=Math.min(pvPrey.x,pvW-20); pvPrey.y=Math.min(pvPrey.y,pvH-20);
+  }
 }
 function pvLoop(ts){
   const dt=Math.min(.05,(ts-pvLast)/1000||.016); pvLast=ts;
   pvx.clearRect(0,0,pvW,pvH);
+  
+  // Render backdrop environment matching user's choice
+  if(BACKDROPS[backdrop]){
+    pvx.fillStyle = BACKDROPS[backdrop].field;
+    pvx.fillRect(0,0,pvW,pvH);
+  }
+  for(const m of pvMotes){
+    m.x += m.vx*dt; m.y += m.vy*dt; m.a += m.va*dt;
+    if(m.x < 0) m.x = pvW; if(m.x > pvW) m.x = 0;
+    if(m.y < 0) m.y = pvH; if(m.y > pvH) m.y = 0;
+    pvx.save();
+    pvx.translate(m.x, m.y);
+    pvx.rotate(m.a);
+    pvx.globalAlpha = 0.32;
+    pvx.fillStyle = m.c;
+    pvx.beginPath();
+    pvx.ellipse(0, 0, m.s, m.s*0.45, 0, 0, 7);
+    pvx.fill();
+    pvx.restore();
+  }
+
   if(pvPrey){ if(!reduce) pvPrey.step(dt,[]); pvPrey.draw(pvx); }
   requestAnimationFrame(pvLoop);
 }
@@ -2661,6 +2663,9 @@ function setFilter(f){
 function setBackdrop(k){
   backdrop=k;
   fieldEl.style.background=BACKDROPS[k].field;
+  const winEl = document.querySelector(".window");
+  if(winEl && BACKDROPS[k]) winEl.style.background = BACKDROPS[k].field;
+  initPvMotes();
   if(running && W && H) makeCovers(W,H);   // live re-skin mid-session
 }
 function rotateBackdropFilter(){
@@ -3032,12 +3037,20 @@ function loop(ts){
   if(groundCv) fx.drawImage(groundCv,0,0,W,H);
   stepMotes(dt,W,H,ts);
   drawMotes(fx);
+  // Draw hidden prey underneath foliage
+  if(prey && prey.alive && prey.state === "hidden") prey.draw(fx);
+
   for(const c of covers){
     let sx=0, sy=0;
+    const isHiding = (prey && prey.alive && prey.state === "hidden" && prey.hide === c);
+    if(isHiding){
+      c.shake = Math.max(c.shake, 1.35);
+    }
     if(c.shake>.004){
-      c.shake*=Math.exp(-5.5*dt);
-      sx=Math.sin(ts*.045+c.seed)*c.r*.10*c.shake;
-      sy=Math.cos(ts*.061+c.seed)*c.r*.05*c.shake;
+      if(!isHiding) c.shake*=Math.exp(-4.5*dt);
+      const freq = ts*.052 + c.seed;
+      sx=Math.sin(freq*1.4)*c.r*.22*c.shake;
+      sy=Math.cos(freq*.95)*c.r*.14*c.shake;
     }else c.shake=0;
     fx.drawImage(c.cv, c.x-c.off+sx, c.y-c.off+sy, c.side, c.side);
   }
@@ -3119,7 +3132,7 @@ function loop(ts){
     decoys.length = 0;
   }
 
-  prey.draw(fx);
+  if(prey && prey.state !== "hidden") prey.draw(fx);
 }
 
 /* hold-to-quit so a paw can't end the session */
@@ -3277,6 +3290,7 @@ function updateAuthUI(user){
     } catch(e){}
   } else {
     authGate.classList.remove("hidden");
+    if(typeof startAuthBgIfNeeded === "function") startAuthBgIfNeeded();
     authUserEl.style.display = "none";
     if(running) endGame();
   }
@@ -3330,10 +3344,6 @@ document.getElementById("gateGoogleBtn").addEventListener("click", () => {
   });
 });
 
-document.getElementById("authSignout").addEventListener("click", () => {
-  if(fbAuth) fbAuth.signOut();
-});
-
 gateAuthForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const email = document.getElementById("gateAuthEmail").value.trim();
@@ -3381,14 +3391,72 @@ if(navigator.onLine && (location.protocol === "http:" || location.protocol === "
   }, 1200);
 }
 
-/* ================= Splash, Onboarding & Critter Characters (Duolingo Style) ================= */
-const CRITTER_CAST = {
-  Brix: { species: 'beetle', canvasId: 'splashBrix' },
-  Pip:  { species: 'mouse',  canvasId: 'splashPip' },
-  Ziggy:{ species: 'snake',  canvasId: 'splashZiggy' },
-  Nori: { species: 'fish',   canvasId: 'splashNori' }
-};
+/* ================= Living Pre-login / Auth Critters Background Simulation ================= */
+const authCanvas = document.getElementById("authBgCanvas");
+let authCtx = null, authPreyList = [], authW = 0, authH = 0, authLast = 0, authRaf = null;
 
+function sizeAuthBg(){
+  if(!authCtx) return;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  authW = window.innerWidth; authH = window.innerHeight;
+  authCanvas.width = Math.round(authW * dpr);
+  authCanvas.height = Math.round(authH * dpr);
+  authCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function authBgFrame(ts){
+  if(authGate.classList.contains("hidden")){ authRaf = null; return; }
+  const dt = Math.min(.05, (ts - authLast) / 1000 || .016);
+  authLast = ts;
+
+  authCtx.fillStyle = "#080c10";
+  authCtx.fillRect(0, 0, authW, authH);
+
+  authCtx.strokeStyle = "rgba(42,56,70,.30)";
+  authCtx.lineWidth = 1;
+  for(let x = 0; x < authW; x += 80){
+    authCtx.beginPath(); authCtx.moveTo(x, 0); authCtx.lineTo(x, authH); authCtx.stroke();
+  }
+  for(let y = 0; y < authH; y += 80){
+    authCtx.beginPath(); authCtx.moveTo(0, y); authCtx.lineTo(authW, y); authCtx.stroke();
+  }
+
+  for(const p of authPreyList){
+    p.W = authW; p.H = authH;
+    p.step(dt, []);
+    p.draw(authCtx);
+  }
+  authRaf = requestAnimationFrame(authBgFrame);
+}
+
+function startAuthBgIfNeeded(){
+  if(!authCtx || authRaf || authGate.classList.contains("hidden")) return;
+  authLast = performance.now();
+  authRaf = requestAnimationFrame(authBgFrame);
+}
+
+function initAuthBg(){
+  if(!authCanvas) return;
+  authCtx = authCanvas.getContext("2d");
+  sizeAuthBg();
+  window.addEventListener("resize", sizeAuthBg);
+
+  const pool = ["beetle","mouse","moth","fish","snake","lizard","frog","spider","butterfly","cricket"];
+  authPreyList = pool.slice(0, 8).map(k => {
+    const p = new Prey(k, authW, authH);
+    p.scale = rand(.72, 1.10);
+    p.size = Math.round(p.s.size * p.scale * 1.05);
+    p.x = rand(40, Math.max(80, authW - 40));
+    p.y = rand(40, Math.max(80, authH - 40));
+    return p;
+  });
+
+  startAuthBgIfNeeded();
+}
+
+initAuthBg();
+
+/* ================= Onboarding & Critter Characters (Duolingo Style) ================= */
 function renderCritterCanvas(canvas, spKey, sizeScale){
   if(!canvas) return;
   const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -3405,12 +3473,6 @@ function renderCritterCanvas(canvas, spKey, sizeScale){
 }
 
 function paintCritterCast(){
-  Object.keys(CRITTER_CAST).forEach(name => {
-    const item = CRITTER_CAST[name];
-    if(item.canvasId){
-      renderCritterCanvas(document.getElementById(item.canvasId), item.species, 0.72);
-    }
-  });
   // Paint mascot avatars for Duolingo-style onboarding
   renderCritterCanvas(document.getElementById("duoBrix"), "beetle", 0.75);
   renderCritterCanvas(document.getElementById("duoPip"), "mouse", 0.75);
@@ -3425,9 +3487,6 @@ function paintCritterCast(){
   renderCritterCanvas(document.getElementById("duoPickFish"), "fish", 0.70);
 }
 
-const splashScreen = document.getElementById("splashScreen");
-const splashEnterBtn = document.getElementById("splashEnterBtn");
-const splashInstallBtn = document.getElementById("splashInstallBtn");
 const onboardingModal = document.getElementById("onboardingModal");
 const openHelpBtn = document.getElementById("openHelpBtn");
 const openSettingsBtn = document.getElementById("openSettingsBtn");
@@ -3465,15 +3524,6 @@ function openOnboarding(step){
 function closeOnboarding(){
   if(onboardingModal) onboardingModal.classList.remove("open");
 }
-
-if(splashEnterBtn) splashEnterBtn.addEventListener("click", () => {
-  if(splashScreen) splashScreen.classList.add("hidden");
-});
-
-if(splashInstallBtn) splashInstallBtn.addEventListener("click", () => {
-  if(splashScreen) splashScreen.classList.add("hidden");
-  openOnboarding(4); // Slide 4 is the interactive PWA installation guide
-});
 
 if(openHelpBtn) openHelpBtn.addEventListener("click", () => openOnboarding(1));
 
