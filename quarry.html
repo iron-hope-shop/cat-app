@@ -341,6 +341,19 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
     line-height:1.35;
   }
   /* Interactive SCORM-style Onboarding Course Modal */
+  .onboarding-modal{
+    position:fixed;top:0;left:0;right:0;bottom:0;
+    background:rgba(8,12,16,0.88);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    z-index:99999;
+    display:none;align-items:center;justify-content:center;
+    padding:20px;box-sizing:border-box;
+    overflow-y:auto;
+  }
+  .onboarding-modal.open{
+    display:flex;
+  }
   .onboarding-dialog{
     background:var(--idm-bg-surface);border:1px solid var(--idm-border);
     border-radius:24px;max-width:620px;width:100%;max-height:92dvh;
@@ -803,7 +816,7 @@ details[open] summary::after{content:"–"}
 <main id="home" class="screen on">
   <div class="home-app">
     <div class="home-primary">
-      <h1 class="wordmark">cat-app <span class="build-tag">v2.9.1</span></h1>
+      <h1 class="wordmark">cat-app <span class="build-tag">v2.9.2</span></h1>
       <p class="standfirst">A hunting game drawn for the way cats actually see.</p>
       <div class="auth-bar" id="authBar">
         <button class="nav-btn-pill" id="openHelpBtn" type="button" aria-label="Open science & installation guide">
@@ -1050,7 +1063,7 @@ details[open] summary::after{content:"–"}
         <b>App Build Version</b>
         <span>Cloud Run container deployment tag.</span>
       </div>
-      <span class="build-tag" style="margin:0">v2.9.1</span>
+      <span class="build-tag" style="margin:0">v2.9.2</span>
     </div>
   </div>
 
@@ -1078,7 +1091,7 @@ details[open] summary::after{content:"–"}
     <button class="btn-1" id="again">Run it again</button>
     <button class="btn-2" id="home-btn">Change the setup</button>
   </div>
-  <div class="done-foot">cat-app <span class="build-tag">v2.9.1</span></div>
+  <div class="done-foot">cat-app <span class="build-tag">v2.9.2</span></div>
 </section>
 
 <!-- ============ ONBOARDING & PWA INSTALL GUIDE MODAL (SCORM-STYLE COURSE) ============ -->
@@ -1290,7 +1303,7 @@ details[open] summary::after{content:"–"}
   <canvas id="authBgCanvas"></canvas>
   <div class="auth-box">
     <div class="auth-badge">Feline Hunting Game</div>
-    <h2 class="auth-title" id="gateTitle">cat-app <span class="build-tag">v2.9.1</span></h2>
+    <h2 class="auth-title" id="gateTitle">cat-app <span class="build-tag">v2.9.2</span></h2>
     <p class="auth-desc">Sign in with Google SSO or Email to unlock feline hunting & session stats.</p>
 
     <button class="auth-google-btn" id="gateGoogleBtn" type="button" aria-label="Sign in with Google SSO">

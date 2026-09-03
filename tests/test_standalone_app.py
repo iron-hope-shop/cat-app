@@ -234,10 +234,14 @@ class TestQuarryStandaloneApp(unittest.TestCase):
                 self.assertIn(token, src, f"Missing IDM token {token} in {path}")
 
     def test_scorm_onboarding_enforcement(self):
-        """Verify mandatory 5-module SCORM curriculum, localStorage key, and settings replay."""
+        """Verify mandatory 5-module SCORM curriculum, modal styling, localStorage key, and settings replay."""
         for path in ['quarry.html', 'Quarry/www/index.html']:
             with open(path, 'r', encoding='utf-8') as f:
                 src = f.read()
+            # Modal hidden by default until .open is applied
+            self.assertIn('.onboarding-modal{', src)
+            self.assertIn('display:none;', src.replace(' ', ''))
+            self.assertIn('.onboarding-modal.open{display:flex', src.replace(' ', '').replace('\n', ''))
             # 5 modules
             for i in range(1, 6):
                 self.assertIn(f'id="onboardStep{i}"', src, f"Missing onboardStep{i} in {path}")

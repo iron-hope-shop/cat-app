@@ -54,6 +54,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [2.9.2] - 2026-09-02
 
+### Fixed
+- Fixed onboarding modal display styling (`.onboarding-modal`) so SCORM science and critter mascot narration cards remain hidden until explicitly opened (or triggered on first-time login) rather than leaking onto the main game screen.
+
 ### Added
 - **Enforced SCORM Onboarding Curriculum**:
   - Mandatory 5-module interactive SCORM onboarding curriculum presented on first user login covering feline optics, dichromatic vision, kinetic anti-boredom algorithms, behavior profiles, cat-proofing/offline PWA, and predatory loop completion.
